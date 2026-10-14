@@ -8,16 +8,16 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--bg:#16121f;--card:#221b30;--border:#3a2f52;--accent:#a855f7;--accent2:#c084fc;--text:#f0eaff;--text2:#b8a9d9;--text3:#7a6b9e;--green:#4ade80;--yellow:#fbbf24;--blue:#60a5fa;--orange:#fb923c;--red:#f87171}
 body.light{--bg:#f5f3fb;--card:#fff;--border:#e0d5f0;--text:#1a1428;--text2:#4a3d6b;--text3:#8b7ca8}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;overflow-x:hidden}
-/* Верхняя строка с курсом */
 .rate-bar{position:fixed;top:0;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);padding:6px 12px;font-size:11px;font-weight:700;text-align:center;z-index:150;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:8px}
 .rate-bar .rb-val{color:var(--accent2);font-weight:800}
 .rate-bar .rb-refresh{background:transparent;border:1px solid var(--border);color:var(--text3);padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;width:auto;margin:0;box-shadow:none}
-.rate-bar .rb-refresh:active{opacity:.6}
 .container{max-width:600px;margin:0 auto;padding:16px;padding-top:44px}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px}
 .top-bar h1{font-size:20px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -35,6 +35,7 @@ input::placeholder,textarea::placeholder{color:var(--text3)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
 button{width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;box-shadow:0 4px 14px rgba(168,85,247,.3);margin-bottom:8px}
 button:active{opacity:.85}
+button:ghost{background:transparent;border:1px solid var(--border);color:var(--text2);box-shadow:none}
 button.ghost{background:transparent;border:1px solid var(--border);color:var(--text2);box-shadow:none}
 button.danger{background:linear-gradient(135deg,#ef4444,#b91c1c)}
 button.green{background:linear-gradient(135deg,#22c55e,#15803d)}
@@ -197,10 +198,9 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .banner .txt small{display:block;font-weight:400;opacity:.9;margin-top:2px;font-size:11px}
 .banner button{width:auto;padding:8px 14px;font-size:12px;margin:0;background:rgba(255,255,255,.25);box-shadow:none}
 .copy-btn{background:transparent;border:1px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;margin-left:6px;cursor:pointer;width:auto;box-shadow:none}
-.invoice{background:white;color:#1a1428;border-radius:12px;padding:20px;margin:10px 0}
-.invoice h2{font-size:18px;margin-bottom:6px;color:#7c3aed}
-.invoice .inv-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:13px}
-.invoice .inv-total{display:flex;justify-content:space-between;padding:10px 0;font-weight:800;font-size:16px;border-top:2px solid #7c3aed;margin-top:8px}
+.invoice{background:white;color:#1a1428;border-radius:12px;padding:24px;margin:10px 0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.invoice .inv-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px;color:#1a1428}
+.invoice .inv-total{display:flex;justify-content:space-between;padding:10px 0;font-weight:800;font-size:16px;border-top:2px solid #7c3aed;margin-top:8px;color:#1a1428}
 .calc-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .calc-result{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);border-radius:12px;padding:16px;margin-top:10px}
 .calc-result .cr{display:flex;justify-content:space-between;padding:6px 0;font-size:14px}
@@ -247,7 +247,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 </head>
 <body>
 
-<!-- Строка с курсом НБРБ -->
 <div class="rate-bar" id="rateBar">
   <span>💱 Курс НБРБ: <span class="rb-val" id="rateValue">загрузка...</span></span>
   <button class="rb-refresh" onclick="fetchNbrbRate(true)">🔄</button>
@@ -261,7 +260,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 
 <div class="container">
 
-  <!-- ДАШБОРД -->
   <div class="screen active" id="screen-dash">
     <div class="top-bar">
       <h1>🏠 Главная</h1>
@@ -272,7 +270,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div class="form"><h2>📈 Последние 6 месяцев</h2><div id="dashChart"></div></div>
   </div>
 
-  <!-- ПРОФИЛЬ -->
   <div class="screen" id="screen-me">
     <div class="top-bar">
       <h1>👤 Профиль</h1>
@@ -296,7 +293,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
         <div style="font-size:11px;color:var(--text3);margin-top:6px;" id="rateDate">—</div>
         <button class="ghost small" style="margin-top:10px;" onclick="fetchNbrbRate(true)">🔄 Обновить</button>
       </div>
-      <div class="formula" style="margin-top:10px;">Курс подставляется <b>только справочно</b>. В заказах вводи свой курс.</div>
     </div>
     <div class="form">
       <h2>🛠️ Курсы по умолчанию</h2>
@@ -350,7 +346,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     </div>
   </div>
 
-  <!-- ЛЮДИ -->
   <div class="screen" id="screen-people">
     <div class="top-bar">
       <h1>👥 Люди</h1>
@@ -403,7 +398,7 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <button class="back-btn" onclick="openPerson(currentOrderPersonId)">← Назад</button>
     <div class="form">
       <h2 id="orderFormTitle">➕ Новый заказ</h2>
-      <div class="formula" style="margin-bottom:10px;font-size:11px;">💱 Курс НБРБ сейчас: <span id="orderRateHint" style="color:var(--accent2);font-weight:700;">—</span> (справочно, не подставляется)</div>
+      <div class="formula" style="margin-bottom:10px;font-size:11px;">💱 Курс НБРБ сейчас: <span id="orderRateHint" style="color:var(--accent2);font-weight:700;">—</span> (справочно)</div>
       <span class="field-label">Дата заказа</span>
       <input id="o-date" type="date">
       <span class="field-label">📦 Список товаров</span>
@@ -543,7 +538,7 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
   </div>
 </div>
 
-  <script>
+<script>
 const KEY='kitai_people_v1';
 const ARCHIVE_KEY='kitai_archive_v1';
 const DEFAULTS_KEY='kitai_defaults_v1';
@@ -591,12 +586,10 @@ function loadTemplates(){try{return JSON.parse(localStorage.getItem(TEMPLATES_KE
 function saveTemplates(t){localStorage.setItem(TEMPLATES_KEY,JSON.stringify(t))}
 function fmtMoney(byn){const cur=loadCurrency();const c=CURRENCIES[cur];const v=byn*(c.rate||1);return v.toFixed(2)+' '+c.symbol}
 
-// ===== КУРС НБРБ =====
 function getCachedRate(){return parseFloat(localStorage.getItem(RATE_KEY)||'0')}
 function getCachedRateDate(){return localStorage.getItem(RATE_DATE_KEY)||''}
 function renderRateBar(){
-  const r=getCachedRate();
-  const d=getCachedRateDate();
+  const r=getCachedRate();const d=getCachedRateDate();
   const el=document.getElementById('rateValue');
   if(el)el.textContent=r>0?(r.toFixed(4)+' BYN за 1 ¥'):'нет данных';
   const box=document.getElementById('rateBox');
@@ -607,30 +600,41 @@ function renderRateBar(){
   if(hint)hint.textContent=r>0?(r.toFixed(4)+' BYN за 1 ¥'):'нет данных';
 }
 async function fetchNbrbRate(force){
-  const cached=getCachedRate();
-  const cachedDate=getCachedRateDate();
-  const today=new Date().toISOString().slice(0,10);
-  // Если уже свежий — берём из кэша
+  const cached=getCachedRate();const cachedDate=getCachedRateDate();const today=new Date().toISOString().slice(0,10);
   if(!force&&cached>0&&cachedDate===today){renderRateBar();return}
-  // Пробуем получить с Нацбанка
-  try{
-    const url='https://api.nbrb.by/exrates/rates/462?parammode=2';
-    const resp=await fetch(url);
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    const data=await resp.json();
-    // Cur_OfficialRate = за 10 юаней
-    const rateForOne=data.Cur_OfficialRate/data.Cur_Scale;
-    if(rateForOne>0){
-      localStorage.setItem(RATE_KEY,String(rateForOne));
-      localStorage.setItem(RATE_DATE_KEY,today);
-      renderRateBar();
-      console.log('✅ Курс НБРБ получен:',rateForOne);
-    }
-  }catch(err){
-    console.warn('Не удалось получить курс НБРБ:',err.message);
-    // Показываем кэш если есть
-    renderRateBar();
+  const urls=[
+    'https://api.nbrb.by/exrates/rates/462?parammode=2',
+    'https://corsproxy.io/?https://api.nbrb.by/exrates/rates/462?parammode=2'
+  ];
+  for(const url of urls){
+    try{
+      const resp=await fetch(url,{cache:'no-store'});
+      if(!resp.ok)continue;
+      const data=await resp.json();
+      if(data && data.Cur_OfficialRate){
+        const r=data.Cur_OfficialRate/data.Cur_Scale;
+        if(r>0){localStorage.setItem(RATE_KEY,String(r));localStorage.setItem(RATE_DATE_KEY,today);renderRateBar();return;}
+      }
+    }catch(err){console.warn('Не смог с',url,':',err.message)}
   }
+  renderRateBar();
+  if(force)manualRateInput();
+}
+function manualRateInput(){
+  const cur=getCachedRate();
+  const html='<div style="text-align:left;color:var(--text)">'+
+    '<p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Автоматически не получилось. Введи вручную.</p>'+
+    '<p style="font-size:12px;color:var(--text3);margin-bottom:8px;">На сайте nbrb.by: «10 CNY = X BYN». Подели на 10.</p>'+
+    '<input id="manualRateVal" type="number" step="0.0001" inputmode="decimal" placeholder="например 0.45" value="'+(cur>0?cur:'')+'" style="width:100%;padding:12px;border-radius:10px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:16px;text-align:center;font-weight:700;margin-bottom:12px;">'+
+    '<button onclick="saveManualRate()">💾 Сохранить курс</button></div>';
+  showModal('💱 Ввести курс',html);
+}
+function saveManualRate(){
+  const v=parseFloat(document.getElementById('manualRateVal').value)||0;
+  if(v<=0){showModal('⚠️','Введи число > 0');return}
+  localStorage.setItem(RATE_KEY,String(v));
+  localStorage.setItem(RATE_DATE_KEY,new Date().toISOString().slice(0,10));
+  renderRateBar();closeModal();
 }
 
 function saveDefaults(){
@@ -716,7 +720,7 @@ function closeModal(){document.getElementById('modal').classList.remove('active'
 function loadPin(){return localStorage.getItem(PIN_KEY)||''}
 function savePin(){
   const pin=document.getElementById('me-pin').value.trim();
-  if(pin&&!/^\d{4,6}$/.test(pin)){showModal('⚠️','PIN должен быть 4-6 цифр');return}
+  if(pin&&!/^\d{4,6}$/.test(pin)){showModal('⚠️','PIN 4-6 цифр');return}
   if(pin)localStorage.setItem(PIN_KEY,pin);else localStorage.removeItem(PIN_KEY);
   showModal('✅',pin?'PIN сохранён':'PIN отключён');
 }
@@ -748,64 +752,36 @@ function addCategory(){
   if(cats.includes(n)){showModal('⚠️','Такая уже есть');return}
   cats.push(n);saveCats(cats);document.getElementById('newCatName').value='';renderCats();
 }
-function delCategory(i){if(!confirm('Удалить категорию?'))return;const cats=loadCats();cats.splice(i,1);saveCats(cats);renderCats();}
+function delCategory(i){if(!confirm('Удалить?'))return;const cats=loadCats();cats.splice(i,1);saveCats(cats);renderCats();}
 
-// ===== ДАШБОРД =====
+function getAvatarHtml(p,size){
+  if(p.photo)return '<img src="'+p.photo+'" style="width:100%;height:100%;object-fit:cover;">';
+  return p.avatar||'🧑';
+}
+
 function renderDash(){
-  const data=load();
-  const t=calcTotals(data);
-  let overdueCount=0;
-  data.forEach(p=>{if(calcPerson(p).overdue)overdueCount++;});
-
+  const data=load();const t=calcTotals(data);
+  let overdueCount=0;data.forEach(p=>{if(calcPerson(p).overdue)overdueCount++;});
   document.getElementById('dashCards').innerHTML=
     '<div class="dash-card red"><div class="dc-lbl">💰 Должны всего</div><div class="dc-val">'+fmtMoney(t.totalRemain)+'</div></div>'+
     '<div class="dash-card green"><div class="dc-lbl">📈 Заработано</div><div class="dc-val">'+fmtMoney(t.totalProfit)+'</div></div>'+
     '<div class="dash-card blue"><div class="dc-lbl">👥 Люди</div><div class="dc-val">'+data.length+'</div></div>'+
     '<div class="dash-card yellow"><div class="dc-lbl">🔥 Просрочки</div><div class="dc-val">'+overdueCount+'</div></div>';
-
-  const debtors=data.filter(p=>{const c=calcPerson(p);return c.remain>0.01;})
-    .map(p=>({p,c:calcPerson(p)}))
-    .sort((a,b)=>b.c.remain-a.c.remain).slice(0,5);
+  const debtors=data.filter(p=>{const c=calcPerson(p);return c.remain>0.01;}).map(p=>({p,c:calcPerson(p)})).sort((a,b)=>b.c.remain-a.c.remain).slice(0,5);
   const overdue=data.filter(p=>calcPerson(p).overdue).slice(0,5);
   const newbies=data.filter(p=>(p.tags||[]).includes('new')).slice(0,5);
-
   let tasksHtml='';
-  if(overdue.length){
-    tasksHtml+='<h3>🔥 Просрочки > 30 дней</h3>';
-    tasksHtml+=overdue.map(p=>{const c=calcPerson(p);
-      return '<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div><div class="dt-sub">не платит давно</div></div><div class="dt-amount">'+fmtMoney(c.remain)+'</div></div>';
-    }).join('');
-  }
-  if(debtors.length){
-    tasksHtml+='<h3 style="margin-top:12px;">💰 Топ должников</h3>';
-    tasksHtml+=debtors.map(x=>
-      '<div class="dash-task" onclick="openPerson('+x.p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(x.p,28)+' '+escapeHtml(x.p.name)+'</div><div class="dt-sub">осталось оплатить</div></div><div class="dt-amount">'+fmtMoney(x.c.remain)+'</div></div>'
-    ).join('');
-  }
-  if(newbies.length){
-    tasksHtml+='<h3 style="margin-top:12px;">🆕 Новые клиенты</h3>';
-    tasksHtml+=newbies.map(p=>'<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div></div><div class="dt-amount" style="color:var(--green);">🆕</div></div>').join('');
-  }
+  if(overdue.length){tasksHtml+='<h3>🔥 Просрочки > 30 дней</h3>';tasksHtml+=overdue.map(p=>{const c=calcPerson(p);return '<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div><div class="dt-sub">не платит давно</div></div><div class="dt-amount">'+fmtMoney(c.remain)+'</div></div>';}).join('');}
+  if(debtors.length){tasksHtml+='<h3 style="margin-top:12px;">💰 Топ должников</h3>';tasksHtml+=debtors.map(x=>'<div class="dash-task" onclick="openPerson('+x.p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(x.p,28)+' '+escapeHtml(x.p.name)+'</div><div class="dt-sub">осталось оплатить</div></div><div class="dt-amount">'+fmtMoney(x.c.remain)+'</div></div>').join('');}
+  if(newbies.length){tasksHtml+='<h3 style="margin-top:12px;">🆕 Новые клиенты</h3>';tasksHtml+=newbies.map(p=>'<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div></div><div class="dt-amount" style="color:var(--green);">🆕</div></div>').join('');}
   if(!tasksHtml)tasksHtml='<div style="text-align:center;color:var(--text3);padding:12px;font-size:13px;">Всё отлично! 🎉</div>';
   document.getElementById('dashTasks').innerHTML=tasksHtml;
-
   const months={};
-  data.forEach(p=>(p.orders||[]).forEach(o=>{
-    if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);
-    if(!months[m])months[m]=0;months[m]+=c.total;
-  }));
-  const now=new Date();
-  const last6=[];
-  for(let i=5;i>=0;i--){
-    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-    last6.push({k,label:MONTH_SHORT[d.getMonth()],val:months[k]||0});
-  }
+  data.forEach(p=>(p.orders||[]).forEach(o=>{if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);if(!months[m])months[m]=0;months[m]+=c.total;}));
+  const now=new Date();const last6=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');last6.push({k,label:MONTH_SHORT[d.getMonth()],val:months[k]||0});}
   const maxV=Math.max(1,...last6.map(x=>x.val));
-  document.getElementById('dashChart').innerHTML=last6.map(x=>{
-    const pct=(x.val/maxV*100);
-    return '<div><div class="month-label">'+x.label+'</div><div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,8)+'%">'+fmtMoney(x.val)+'</div></div></div>';
-  }).join('');
+  document.getElementById('dashChart').innerHTML=last6.map(x=>{const pct=(x.val/maxV*100);return '<div><div class="month-label">'+x.label+'</div><div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,8)+'%">'+fmtMoney(x.val)+'</div></div></div>';}).join('');
 }
 
 function renderMe(){
@@ -835,15 +811,6 @@ function renderTagFilter(){
 }
 function setTagFilter(k){activeTagFilter=k;renderTagFilter();renderPeople();}
 
-// ===== АВАТАР =====
-function getAvatarHtml(p,size){
-  const s=size||'50';
-  if(p.photo){
-    return '<img src="'+p.photo+'" style="width:100%;height:100%;object-fit:cover;">';
-  }
-  return p.avatar||'🧑';
-}
-
 function renderPeople(){
   let data=load();
   const q=(document.getElementById('searchPeople').value||'').toLowerCase().trim();
@@ -853,9 +820,7 @@ function renderPeople(){
   if(sortBy==='name')filtered.sort((a,b)=>a.name.localeCompare(b.name));
   if(sortBy==='debt')filtered.sort((a,b)=>calcPerson(b).remain-calcPerson(a).remain);
   if(sortBy==='total')filtered.sort((a,b)=>calcPerson(b).total-calcPerson(a).total);
-
   renderTagFilter();
-
   const el=document.getElementById('peopleList');
   if(!data.length){el.innerHTML='<div class="empty">Пока никого нет.<br>Нажми ➕ Добавить человека</div>';return}
   if(!filtered.length){el.innerHTML='<div class="empty">Никого не найдено</div>';return}
@@ -864,7 +829,7 @@ function renderPeople(){
     const tags=(p.tags||[]).map(t=>TAGS[t]?'<span class="tag '+TAGS[t].cls+'">'+TAGS[t].label+'</span>':'').join('');
     const spark=makeSparkline(p);
     return '<div class="person-wrap" data-id="'+p.id+'">'+
-      '<div class="person-actions-left" onclick="event.stopPropagation();quickAddOrder('+p.id+')">⚡<br>Заказ</div>'+
+      '<div class="person-actions-left" onclick="event.stopPropagation();openAddOrder('+p.id+')">⚡<br>Заказ</div>'+
       '<div class="person-actions">'+
         '<div class="act act-edit" onclick="event.stopPropagation();openEditForm('+p.id+')"><span class="ai">✏️</span>Изменить</div>'+
         '<div class="act act-pay" onclick="event.stopPropagation();openPerson('+p.id+')"><span class="ai">💰</span>Оплата</div>'+
@@ -883,19 +848,9 @@ function renderPeople(){
 }
 
 function makeSparkline(p){
-  const months={};
-  (p.orders||[]).forEach(o=>{
-    if(!o.date)return;const m=o.date.slice(0,7);
-    const c=calcOrder(o);
-    if(!months[m])months[m]=0;months[m]+=c.total;
-  });
-  const now=new Date();
-  const last6=[];
-  for(let i=5;i>=0;i--){
-    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-    last6.push(months[k]||0);
-  }
+  const months={};(p.orders||[]).forEach(o=>{if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);if(!months[m])months[m]=0;months[m]+=c.total;});
+  const now=new Date();const last6=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');last6.push(months[k]||0);}
   const max=Math.max(1,...last6);
   return '<div class="sparkline">'+last6.map(v=>'<div class="bar" style="height:'+(v>0?Math.max(4,v/max*20):2)+'px;opacity:'+(v>0?.7:.15)+';"></div>').join('')+'</div>';
 }
@@ -903,15 +858,13 @@ function makeSparkline(p){
 function attachSwipe(){
   document.querySelectorAll('.person-wrap').forEach(wrap=>{
     const row=wrap.querySelector('.person-row');
-    let startX=0,currentX=0,dragging=false;
-    const maxR=210,maxL=90;
+    let startX=0,currentX=0,dragging=false;const maxR=210,maxL=90;
     row.addEventListener('touchstart',e=>{
       if(activeSwipe&&activeSwipe!==wrap)activeSwipe.querySelector('.person-row').style.transform='';
       startX=e.touches[0].clientX;currentX=0;dragging=true;row.style.transition='none';
     },{passive:true});
     row.addEventListener('touchmove',e=>{
-      if(!dragging)return;
-      let diff=e.touches[0].clientX-startX;
+      if(!dragging)return;let diff=e.touches[0].clientX-startX;
       if(diff>maxL)diff=maxL;if(diff<-maxR)diff=-maxR;
       currentX=diff;row.style.transform='translateX('+diff+'px)';
     },{passive:true});
@@ -921,13 +874,9 @@ function attachSwipe(){
       else if(currentX>40){row.style.transform='translateX(0)';setTimeout(()=>{openAddOrder(parseInt(wrap.dataset.id));},100);currentX=0;}
       else{row.style.transform='translateX(0)';if(activeSwipe===wrap)activeSwipe=null;}
     });
-    row.addEventListener('click',e=>{
-      if(currentX<-60){e.preventDefault();e.stopPropagation();row.style.transform='translateX(0)';currentX=0;activeSwipe=null;}
-    });
+    row.addEventListener('click',e=>{if(currentX<-60){e.preventDefault();e.stopPropagation();row.style.transform='translateX(0)';currentX=0;activeSwipe=null;}});
   });
 }
-
-function quickAddOrder(id){openAddOrder(id);}
 
 function openPerson(id){
   const data=load();const p=data.find(x=>x.id===id);if(!p)return;
@@ -936,10 +885,8 @@ function openPerson(id){
   if(c.status==='paid'){statusText='✅ Оплачено';statusClass='paid'}
   else if(c.status==='partial'){statusText='⚠️ Частично';statusClass='partial'}
   if(c.overdue&&c.status!=='paid'){statusText='🔥 Просрочено >30 дн.';statusClass='debt'}
-
   const ordersHtml=(p.orders||[]).length?(p.orders||[]).map(o=>{
-    const co=calcOrder(o);
-    const catIco=getCatIcon(o.category);
+    const co=calcOrder(o);const catIco=getCatIcon(o.category);
     return '<div class="order-item">'+
       '<div class="head"><div class="date">'+(o.date?new Date(o.date).toLocaleDateString('ru-RU'):'без даты')+'</div>'+
       '<div class="order-total">'+fmtMoney(co.total)+'</div></div>'+
@@ -957,7 +904,6 @@ function openPerson(id){
       '<button class="small ghost" onclick="event.stopPropagation();editOrder('+p.id+','+o.id+')">✏️</button>'+
       '<button class="small danger" onclick="event.stopPropagation();deleteOrder('+p.id+','+o.id+')">🗑</button></div></div>';
   }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Заказов нет</div>';
-
   const paymentsHtml=(p.payments||[]).length?(p.payments||[]).slice().reverse().map(pay=>
     '<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">'+
@@ -966,28 +912,18 @@ function openPerson(id){
         '<button class="small ghost" style="padding:4px 8px;font-size:11px;" onclick="deletePayment('+p.id+','+pay.id+')">×</button>'+
       '</div>'+
       (pay.comment?'<div style="color:var(--text3);font-size:12px;margin-top:4px;font-style:italic;">💬 '+escapeHtml(pay.comment)+'</div>':'')+
-    '</div>'
-  ).join(''):'<div style="color:var(--text3);font-size:13px;text-align:center;padding:10px;">Платежей пока нет</div>';
-
+    '</div>').join(''):'<div style="color:var(--text3);font-size:13px;text-align:center;padding:10px;">Платежей нет</div>';
   const overpayHtml=c.overpay>0.01?'<div style="text-align:center;color:var(--green);font-size:13px;font-weight:700;margin-bottom:12px;padding:8px;background:rgba(74,222,128,.1);border-radius:10px;border:1px solid rgba(74,222,128,.3);">💰 Переплата: '+fmtMoney(c.overpay)+'</div>':'';
-
   const tel=p.telegram?p.telegram.replace('@','').replace(/\s/g,''):'';
   const phone=p.phone?p.phone.replace(/\s/g,''):'';
   const callBtn=phone?'<button class="blue" onclick="window.location.href=\'tel:'+escapeAttr(phone)+'\'">📞 Позвонить</button>':'';
   const tgBtn=tel?'<button class="blue" onclick="window.open(\'https://t.me/'+escapeAttr(tel)+'\',\'_blank\')">💬 Написать в Telegram</button>':'';
-
-  const tagsRow=Object.keys(TAGS).map(k=>{
-    const active=(p.tags||[]).includes(k);
-    const cls=active?('active-'+k):'';
-    return '<div class="tag-btn '+cls+'" onclick="toggleTag('+p.id+',\''+k+'\')">'+TAGS[k].label+'</div>';
-  }).join('');
-
+  const tagsRow=Object.keys(TAGS).map(k=>{const active=(p.tags||[]).includes(k);const cls=active?('active-'+k):'';return '<div class="tag-btn '+cls+'" onclick="toggleTag('+p.id+',\''+k+'\')">'+TAGS[k].label+'</div>';}).join('');
   const templates=loadTemplates();
   const tmplHtml=templates.map(t=>'<div class="tmpl-item" onclick="useTemplate('+p.id+','+t.id+')"><div class="tmpl-name">'+escapeHtml(t.name)+'</div><div class="tmpl-text">'+escapeHtml(t.text)+'</div></div>').join('');
 
   document.getElementById('personDetails').innerHTML=
-    '<div class="profile-head">'+
-    '<div class="avatar-big">'+getAvatarHtml(p,80)+'</div>'+
+    '<div class="profile-head"><div class="avatar-big">'+getAvatarHtml(p,80)+'</div>'+
     '<div class="name">'+escapeHtml(p.name)+'</div>'+
     (p.phone?'<div class="contact">📞 '+escapeHtml(p.phone)+'</div>':'')+
     (p.telegram?'<div class="contact">💬 @'+escapeHtml(tel)+'</div>':'')+'</div>'+
@@ -1000,7 +936,7 @@ function openPerson(id){
       '<div class="stat deliv"><span class="val">'+fmtMoney(c.deliv).split(' ')[0]+'</span><span class="lbl">Доставка</span></div>'+
     '</div>'+
     ((callBtn||tgBtn)?'<div class="form"><h2>📞 Связь</h2>'+callBtn+tgBtn+'</div>':'')+
-    (tmplHtml?'<div class="form"><h2>💬 Шаблоны сообщений</h2><div class="tmpl-list">'+tmplHtml+'</div></div>':'')+
+    (tmplHtml?'<div class="form"><h2>💬 Шаблоны</h2><div class="tmpl-list">'+tmplHtml+'</div></div>':'')+
     '<div class="form"><h2>📦 Заказы ('+(p.orders||[]).length+')</h2>'+
       '<button class="green" onclick="openAddOrder('+p.id+')">➕ Добавить заказ</button>'+ordersHtml+'</div>'+
     '<div class="form"><h2>💰 Оплата</h2>'+
@@ -1023,7 +959,7 @@ function openPerson(id){
       '<button onclick="addPayment('+p.id+')">➕ Добавить платёж</button>'+
       '<h2 style="margin-top:16px;">История платежей</h2>'+paymentsHtml+
     '</div>'+
-    '<button class="ghost" onclick="showInvoice('+p.id+')">🖨️ Сформировать счёт</button>'+
+    '<button class="ghost" onclick="showInvoice('+p.id+')">🧾 Сформировать счёт</button>'+
     '<button onclick="openEditForm('+p.id+')">✏️ Редактировать контакты</button>'+
     '<button class="danger" onclick="deletePerson('+p.id+')">🗑 Удалить человека</button>';
 
@@ -1039,24 +975,16 @@ function toggleTag(id,k){
   if(i>=0)data[idx].tags.splice(i,1);else data[idx].tags.push(k);
   save(data);openPerson(id);
 }
-
 function useTemplate(id,tid){
   const p=load().find(x=>x.id===id);if(!p)return;
-  const templates=loadTemplates();
-  const t=templates.find(x=>x.id===tid);if(!t)return;
+  const t=loadTemplates().find(x=>x.id===tid);if(!t)return;
   const c=calcPerson(p);
   const text=t.text.replace('{сумма}',c.remain.toFixed(2)).replace('{имя}',p.name);
   const tel=p.telegram?p.telegram.replace('@','').replace(/\s/g,''):'';
-  if(tel){
-    navigator.clipboard.writeText(text).catch(()=>{});
-    window.open('https://t.me/'+tel,'_blank');
-    showModal('💬','Открыл Telegram.\nТекст скопирован — вставь в чат.');
-  }else{
-    showModal('💬 Шаблон','<b>'+escapeHtml(t.name)+'</b><br><br>'+escapeHtml(text)+'<br><br><span style="font-size:12px;color:var(--text3);">У клиента нет Telegram</span>');
-  }
+  if(tel){navigator.clipboard.writeText(text).catch(()=>{});window.open('https://t.me/'+tel,'_blank');showModal('💬','Открыл Telegram.\nТекст скопирован.');}
+  else{showModal('💬 Шаблон','<b>'+escapeHtml(t.name)+'</b><br><br>'+escapeHtml(text));}
 }
-
-function copyText(t){navigator.clipboard.writeText(t).then(()=>showModal('📋','Скопировано:\n'+t)).catch(()=>showModal('📋','Скопируй вручную:\n'+t));}
+function copyText(t){navigator.clipboard.writeText(t).then(()=>showModal('📋','Скопировано:\n'+t)).catch(()=>showModal('📋','Скопируй:\n'+t));}
 function showBigPhoto(src){showModal('📸','<img src="'+src+'" style="width:100%;border-radius:10px;">');}
 function quickPay(amount){const inp=document.getElementById('pay-amount');const cur=parseFloat(inp.value)||0;inp.value=(cur+amount).toFixed(2);}
 function addPayment(id){
@@ -1082,6 +1010,7 @@ function deletePayment(id,pid){
   data[idx].payments=(data[idx].payments||[]).filter(x=>x.id!==pid);
   save(data);openPerson(id);
 }
+
 function showInvoice(id){
   const p=load().find(x=>x.id===id);if(!p)return;
   const c=calcPerson(p);
@@ -1089,15 +1018,53 @@ function showInvoice(id){
     const co=calcOrder(o);
     return '<div class="inv-row"><span>'+(o.date?new Date(o.date).toLocaleDateString('ru-RU'):'')+(o.items?' · '+escapeHtml(o.items):'')+'</span><span>'+fmtMoney(co.total)+'</span></div>';
   }).join('');
-  const html='<div class="invoice">'+
-    '<h2>📦 Счёт для: '+escapeHtml(p.name)+'</h2>'+
-    '<div style="font-size:12px;color:#666;margin-bottom:10px;">Дата: '+new Date().toLocaleDateString('ru-RU')+'</div>'+
-    rows+
-    '<div class="inv-total"><span>Итого:</span><span>'+fmtMoney(c.total)+'</span></div>'+
-    '<div class="inv-total"><span>Оплачено:</span><span>'+fmtMoney(c.paid)+'</span></div>'+
-    '<div class="inv-total" style="color:#7c3aed;"><span>К оплате:</span><span>'+fmtMoney(c.remain)+'</span></div>'+
-  '</div><button onclick="window.print()" style="background:#7c3aed;">🖨️ Печать / Сохранить PDF</button>';
-  showModal('🖨️ Счёт','<div style="color:var(--text)">'+html+'</div>');
+  const invoiceHtml=
+    '<div id="invoiceToRender" class="invoice">'+
+      '<div style="font-size:22px;font-weight:900;color:#7c3aed;margin-bottom:14px;">📦 Счёт</div>'+
+      '<div style="font-size:16px;font-weight:700;color:#1a1428;margin-bottom:6px;">Кому: '+escapeHtml(p.name)+'</div>'+
+      '<div style="font-size:12px;color:#666;margin-bottom:14px;">Дата: '+new Date().toLocaleDateString('ru-RU')+'</div>'+
+      rows+
+      '<div class="inv-total"><span>Итого:</span><span>'+fmtMoney(c.total)+'</span></div>'+
+      '<div class="inv-total"><span>Оплачено:</span><span>'+fmtMoney(c.paid)+'</span></div>'+
+      '<div class="inv-total" style="color:#7c3aed;"><span>К оплате:</span><span>'+fmtMoney(c.remain)+'</span></div>'+
+    '</div>';
+  const btns=
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">'+
+      '<button id="btnSaveImg" onclick="saveInvoiceAsImage()" style="background:linear-gradient(135deg,#22c55e,#15803d);flex:1;min-width:140px;">🖼️ Сохранить картинкой</button>'+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px;">Картинка сохранится в «Загрузки» / «Файлы»</div>';
+  showModal('🧾 Счёт', invoiceHtml + btns);
+}
+
+async function saveInvoiceAsImage(){
+  const btn=document.getElementById('btnSaveImg');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Готовлю...';}
+  if(!window.html2canvas){
+    showModal('⚠️','Библиотека не загрузилась.\nПроверь интернет и обнови страницу.');
+    if(btn){btn.disabled=false;btn.textContent='🖼️ Сохранить картинкой';}
+    return;
+  }
+  const el=document.getElementById('invoiceToRender');
+  if(!el){if(btn){btn.disabled=false;btn.textContent='🖼️ Сохранить картинкой';}return;}
+  try{
+    const canvas=await window.html2canvas(el,{backgroundColor:'#ffffff',scale:2,useCORS:true,logging:false});
+    canvas.toBlob(blob=>{
+      if(!blob){showModal('⚠️','Не удалось создать картинку');if(btn){btn.disabled=false;btn.textContent='🖼️ Сохранить картинкой';}return;}
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      const name=(el.querySelector('div:nth-child(2)')?.textContent||'клиент').replace('Кому: ','').trim();
+      a.href=url;
+      a.download='счёт_'+name+'_'+new Date().toISOString().slice(0,10)+'.png';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),2000);
+      if(btn){btn.disabled=false;btn.textContent='🖼️ Сохранить картинкой';}
+      showModal('✅','Картинка сохранена!\n\nИщи в «Загрузки» или «Файлы».\nОттуда отправь клиенту.');
+    },'image/png',1.0);
+  }catch(err){
+    console.error(err);
+    if(btn){btn.disabled=false;btn.textContent='🖼️ Сохранить картинкой';}
+    showModal('❌','Ошибка: '+err.message);
+  }
 }
 
 function openAddForm(){
@@ -1269,8 +1236,7 @@ function renderPayments(){
   const el=document.getElementById('paymentsList');
   if(!data.length){el.innerHTML='<div class="empty">Нет записей</div>';return}
   el.innerHTML=data.map(p=>{
-    const c=calcPerson(p);
-    let st='Должен',cls=c.status;
+    const c=calcPerson(p);let st='Должен',cls=c.status;
     if(c.status==='paid')st='✅ Оплачено';else if(c.status==='partial')st='⚠️ Частично';
     if(c.overdue&&c.status!=='paid'){st='🔥 Просрочено';cls='overdue'}
     let amountLine,amountColor;
@@ -1290,11 +1256,7 @@ function renderProfit(){
   document.getElementById('totalExpense').textContent=fmtMoney(t.totalCost).split(' ')[0];
   document.getElementById('totalProfit').textContent=fmtMoney(t.totalProfit).split(' ')[0];
   const months={};
-  data.forEach(p=>(p.orders||[]).forEach(o=>{
-    if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);
-    if(!months[m])months[m]={profit:0,income:0,cost:0};
-    months[m].income+=c.total;months[m].cost+=c.cost;months[m].profit+=c.profit;
-  }));
+  data.forEach(p=>(p.orders||[]).forEach(o=>{if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);if(!months[m])months[m]={profit:0,income:0,cost:0};months[m].income+=c.total;months[m].cost+=c.cost;months[m].profit+=c.profit;}));
   const mKeys=Object.keys(months).sort().reverse();
   document.getElementById('profitMonthly').innerHTML=mKeys.length?mKeys.map(k=>{
     const p=k.split('-');const m=months[k];const color=m.profit>=0?'var(--green)':'var(--red)';
@@ -1306,13 +1268,8 @@ function renderProfit(){
       '</div>'+
       '<div style="text-align:right;font-weight:800;color:'+color+';margin-top:4px;">Прибыль: '+fmtMoney(m.profit)+'</div></div>';
   }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Нет данных</div>';
-
   const cats={};
-  data.forEach(p=>(p.orders||[]).forEach(o=>{
-    const c=calcOrder(o);const key=o.category||'Без категории';
-    if(!cats[key])cats[key]={count:0,total:0,profit:0};
-    cats[key].count++;cats[key].total+=c.total;cats[key].profit+=c.profit;
-  }));
+  data.forEach(p=>(p.orders||[]).forEach(o=>{const c=calcOrder(o);const key=o.category||'Без категории';if(!cats[key])cats[key]={count:0,total:0,profit:0};cats[key].count++;cats[key].total+=c.total;cats[key].profit+=c.profit;}));
   const cKeys=Object.keys(cats).sort((a,b)=>cats[b].total-cats[a].total);
   document.getElementById('categoryStats').innerHTML=cKeys.length?cKeys.map(k=>{
     const cat=cats[k];
@@ -1324,8 +1281,7 @@ function renderProfit(){
 }
 
 function renderPhotos(){
-  const data=load();
-  const photos=[];
+  const data=load();const photos=[];
   data.forEach(p=>(p.orders||[]).forEach(o=>{if(o.photo)photos.push({person:p,order:o});}));
   const el=document.getElementById('photoGallery');
   if(!photos.length){el.innerHTML='<div class="empty">Пока нет фото товаров.<br>Добавь фото при создании заказа.</div>';return}
@@ -1333,8 +1289,7 @@ function renderPhotos(){
     '<div class="pg-item" onclick="openPerson('+x.person.id+')">'+
       '<img src="'+x.order.photo+'">'+
       '<div class="pg-caption">'+x.person.avatar+' '+escapeHtml(x.person.name)+(x.order.items?' · '+escapeHtml(x.order.items.substring(0,20)):'')+'</div>'+
-    '</div>'
-  ).join('')+'</div>';
+    '</div>').join('')+'</div>';
 }
 
 function closeMonth(){
@@ -1344,22 +1299,20 @@ function closeMonth(){
   const key=year+'-'+String(month+1).padStart(2,'0');
   const monthName=MONTH_NAMES[month]+' '+year;
   const t=calcTotals(data);
-  if(!confirm('Закрыть '+monthName+'?\n\n'+data.length+' человек уйдут в историю.\nСумма: '+fmtMoney(t.totalByn)+'\n\nТекущий список обнулится.'))return;
+  if(!confirm('Закрыть '+monthName+'?\n\n'+data.length+' человек уйдут в историю.\nСумма: '+fmtMoney(t.totalByn)+'\n\nСписок обнулится.'))return;
   const archive=loadArchive();
   let finalKey=key,i=2;while(archive[finalKey]){finalKey=key+'_'+i;i++;}
   archive[finalKey]={monthName,closedAt:new Date().toISOString(),people:JSON.parse(JSON.stringify(data)),
     totalByn:t.totalByn,totalYuan:t.totalYuan,totalWeight:t.totalWeight,totalPaid:t.totalPaid,totalProfit:t.totalProfit,peopleCount:data.length};
   saveArchive(archive);save([]);
-  showModal('✅','Месяц «'+monthName+'» закрыт.\nВсе данные в Истории 📚');
+  showModal('✅','Месяц «'+monthName+'» закрыт.\nДанные в Истории 📚');
   renderAll();
 }
 function renderArchive(){
-  const archive=loadArchive();
-  const keys=Object.keys(archive).sort().reverse();
+  const archive=loadArchive();const keys=Object.keys(archive).sort().reverse();
   const el=document.getElementById('archiveList');
   if(!keys.length){el.innerHTML='<div class="empty">История пуста.</div>';return}
-  el.innerHTML=keys.map(k=>{
-    const a=archive[k];
+  el.innerHTML=keys.map(k=>{const a=archive[k];
     return '<div class="archive-card" onclick="openArchive(\''+k+'\')">'+
       '<div class="head"><div class="month-name">📅 '+a.monthName+'</div>'+
       '<div class="month-total">'+fmtMoney(a.totalByn)+'</div></div>'+
@@ -1367,10 +1320,8 @@ function renderArchive(){
   }).join('');
 }
 function openArchive(key){
-  const a=loadArchive()[key];if(!a)return;
-  currentArchiveKey=key;
-  const peopleHtml=a.people.map(p=>{
-    const c=calcPerson(p);
+  const a=loadArchive()[key];if(!a)return;currentArchiveKey=key;
+  const peopleHtml=a.people.map(p=>{const c=calcPerson(p);
     return '<div class="order-item" style="cursor:pointer;" onclick="openArchivePerson(\''+key+'\','+p.id+')">'+
       '<div class="head"><div class="date">'+escapeHtml(p.name)+'</div>'+
       '<div class="order-total">'+fmtMoney(c.total)+'</div></div>'+
@@ -1393,8 +1344,7 @@ function openArchivePerson(key,personId){
   const a=loadArchive()[key];if(!a)return;
   const p=a.people.find(x=>x.id===personId);if(!p)return;
   const c=calcPerson(p);
-  const ordersHtml=(p.orders||[]).length?(p.orders||[]).map(o=>{
-    const co=calcOrder(o);
+  const ordersHtml=(p.orders||[]).length?(p.orders||[]).map(o=>{const co=calcOrder(o);
     return '<div class="order-item">'+
       '<div class="head"><div class="date">'+(o.date?new Date(o.date).toLocaleDateString('ru-RU'):'без даты')+'</div>'+
       '<div class="order-total">'+fmtMoney(co.total)+'</div></div>'+
@@ -1407,8 +1357,7 @@ function openArchivePerson(key,personId){
   }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Заказов нет</div>';
   document.getElementById('archiveDetails').innerHTML=
     '<div class="profile-head"><div class="avatar-big">'+getAvatarHtml(p,80)+'</div><div class="name">'+escapeHtml(p.name)+'</div>'+
-    (p.phone?'<div class="contact">📞 '+escapeHtml(p.phone)+'</div>':'')+
-    (p.telegram?'<div class="contact">💬 @'+escapeHtml(p.telegram)+'</div>':'')+'</div>'+
+    (p.phone?'<div class="contact">📞 '+escapeHtml(p.phone)+'</div>':'')+'</div>'+
     '<div class="total-big"><div class="lbl">Итого за месяц</div><div class="val">'+fmtMoney(c.total)+'</div></div>'+
     '<div class="stats-grid">'+
       '<div class="stat weight"><span class="val">'+c.weight.toFixed(2)+' кг</span><span class="lbl">Вес</span></div>'+
@@ -1427,13 +1376,7 @@ function renderAll(){renderDash();renderMe();renderPeople();renderPayments();ren
 
 function renderStatsFilter(){
   const el=document.getElementById('statsFilterRow');if(!el)return;
-  const chips=[
-    {id:'all',label:'Всё время'},
-    {id:'month',label:'Этот месяц'},
-    {id:'prev',label:'Прошлый месяц'},
-    {id:'debt',label:'Должники'},
-    {id:'paid',label:'Оплачено'}
-  ];
+  const chips=[{id:'all',label:'Всё время'},{id:'month',label:'Этот месяц'},{id:'prev',label:'Прошлый месяц'},{id:'debt',label:'Должники'},{id:'paid',label:'Оплачено'}];
   el.innerHTML=chips.map(c=>'<div class="filter-chip '+(activeStatsFilter===c.id?'active':'')+'" onclick="setStatsFilter(\''+c.id+'\')">'+c.label+'</div>').join('');
 }
 function setStatsFilter(k){activeStatsFilter=k;renderStats();}
@@ -1445,15 +1388,9 @@ function renderStats(){
   let t=calcTotals(allPeople);
   document.getElementById('statsTotal').textContent=fmtMoney(t.totalByn);
   document.getElementById('statsSub').textContent='¥'+t.totalYuan.toFixed(2)+' · '+t.totalWeight.toFixed(2)+' кг';
-
   renderStatsFilter();
-
   const months={};
-  allPeople.forEach(p=>(p.orders||[]).forEach(o=>{
-    if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);
-    if(!months[m])months[m]={total:0,count:0};
-    months[m].total+=c.total;months[m].count++;
-  }));
+  allPeople.forEach(p=>(p.orders||[]).forEach(o=>{if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);if(!months[m])months[m]={total:0,count:0};months[m].total+=c.total;months[m].count++;}));
   const mKeys=Object.keys(months).sort().reverse();
   const maxT=Math.max(1,...mKeys.map(k=>months[k].total));
   document.getElementById('monthlyStats').innerHTML=mKeys.length?mKeys.map(k=>{
@@ -1461,24 +1398,12 @@ function renderStats(){
     return '<div><div class="month-label">'+MONTH_SHORT[parseInt(p[1])-1]+' '+p[0]+' · '+months[k].count+' зак.</div>'+
     '<div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,15)+'%">'+fmtMoney(months[k].total)+'</div></div></div>';
   }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Пока нет данных</div>';
-
   const q=(document.getElementById('searchOrders').value||'').toLowerCase().trim();
-  let all=[];
-  allPeople.forEach(p=>(p.orders||[]).forEach(o=>all.push({person:p,order:o})));
-
-  if(activeStatsFilter==='month'){
-    const now=new Date();const key=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-    all=all.filter(x=>(x.order.date||'').startsWith(key));
-  } else if(activeStatsFilter==='prev'){
-    const d=new Date();d.setMonth(d.getMonth()-1);
-    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-    all=all.filter(x=>(x.order.date||'').startsWith(key));
-  } else if(activeStatsFilter==='debt'){
-    all=all.filter(x=>calcPerson(x.person).status!=='paid');
-  } else if(activeStatsFilter==='paid'){
-    all=all.filter(x=>calcPerson(x.person).status==='paid');
-  }
-
+  let all=[];allPeople.forEach(p=>(p.orders||[]).forEach(o=>all.push({person:p,order:o})));
+  if(activeStatsFilter==='month'){const now=new Date();const key=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');all=all.filter(x=>(x.order.date||'').startsWith(key));}
+  else if(activeStatsFilter==='prev'){const d=new Date();d.setMonth(d.getMonth()-1);const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');all=all.filter(x=>(x.order.date||'').startsWith(key));}
+  else if(activeStatsFilter==='debt')all=all.filter(x=>calcPerson(x.person).status!=='paid');
+  else if(activeStatsFilter==='paid')all=all.filter(x=>calcPerson(x.person).status==='paid');
   if(q)all=all.filter(x=>(x.person.name.toLowerCase().includes(q))||((x.order.items||'').toLowerCase().includes(q))||((x.order.track||'').toLowerCase().includes(q))||((x.order.category||'').toLowerCase().includes(q)));
   all.sort((a,b)=>(b.order.date||'').localeCompare(a.order.date||''));
   document.getElementById('allOrders').innerHTML=all.length?all.slice(0,80).map(x=>{
@@ -1487,8 +1412,7 @@ function renderStats(){
       '<div class="head"><div class="date">'+(x.order.date?new Date(x.order.date).toLocaleDateString('ru-RU'):'—')+' · '+escapeHtml(x.person.name)+'</div>'+
       '<div class="order-total">'+fmtMoney(c.total)+'</div></div>'+
       (x.order.items?'<div class="row-small">📦 '+escapeHtml(x.order.items)+'</div>':'')+
-      (x.order.track?'<div class="row-small">🔖 '+escapeHtml(x.order.track)+'</div>':'')+
-    '</div>';
+      (x.order.track?'<div class="row-small">🔖 '+escapeHtml(x.order.track)+'</div>':'')+'</div>';
   }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Ничего не найдено</div>';
 }
 
@@ -1503,18 +1427,13 @@ function doCalc(){
     '<div class="cr"><span>Товар:</span><b>'+fmtMoney(goods)+'</b></div>'+
     '<div class="cr"><span>Доставка:</span><b>'+fmtMoney(deliv)+'</b></div>'+
     '<div class="cr" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;"><span>Итого клиенту:</span><b>'+fmtMoney(total)+'</b></div>'+
-    '<div class="cr"><span>Твой расход:</span><b style="color:var(--red);">'+fmtMoney(cost)+'</b></div>'+
-    '<div class="cr" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;"><span>💰 Твоя прибыль:</span><b>'+fmtMoney(profit)+'</b></div>'+
-  '</div>';
+    '<div class="cr"><span>Расход:</span><b style="color:var(--red);">'+fmtMoney(cost)+'</b></div>'+
+    '<div class="cr" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;"><span>💰 Прибыль:</span><b>'+fmtMoney(profit)+'</b></div></div>';
 }
 
 function printPeopleList(){
-  const data=load();
-  if(!data.length){showModal('ℹ️','Нет данных');return}
-  const rows=data.map(p=>{
-    const c=calcPerson(p);
-    return '<tr><td>'+escapeHtml(p.name)+'</td><td>'+c.ordersCount+'</td><td>'+c.weight.toFixed(2)+'</td><td>'+fmtMoney(c.total)+'</td><td>'+fmtMoney(c.paid)+'</td><td style="color:'+(c.remain>0?'#ef4444':'#22c55e')+';font-weight:700;">'+fmtMoney(c.remain)+'</td></tr>';
-  }).join('');
+  const data=load();if(!data.length){showModal('ℹ️','Нет данных');return}
+  const rows=data.map(p=>{const c=calcPerson(p);return '<tr><td>'+escapeHtml(p.name)+'</td><td>'+c.ordersCount+'</td><td>'+c.weight.toFixed(2)+'</td><td>'+fmtMoney(c.total)+'</td><td>'+fmtMoney(c.paid)+'</td><td style="color:'+(c.remain>0?'#ef4444':'#22c55e')+';font-weight:700;">'+fmtMoney(c.remain)+'</td></tr>';}).join('');
   const html='<div style="background:white;color:#1a1428;padding:20px;border-radius:12px;">'+
     '<h2 style="color:#7c3aed;margin-bottom:12px;">📋 Список клиентов</h2>'+
     '<div style="font-size:12px;color:#666;margin-bottom:12px;">Дата: '+new Date().toLocaleDateString('ru-RU')+'</div>'+
@@ -1547,8 +1466,7 @@ function importBackup(event){
       if(b.defaults)localStorage.setItem(DEFAULTS_KEY,JSON.stringify(b.defaults));
       if(b.categories)localStorage.setItem(CAT_KEY,JSON.stringify(b.categories));
       if(b.templates)saveTemplates(b.templates);
-      renderAll();
-      showModal('✅','Загружено: '+b.data.length+' человек');
+      renderAll();showModal('✅','Загружено: '+b.data.length+' человек');
     }catch(err){showModal('❌','Ошибка: '+err.message)}
   };
   reader.readAsText(file);event.target.value='';
@@ -1568,17 +1486,13 @@ function plural(n,one,few,many){const m10=n%10,m100=n%100;if(m10===1&&m100!==11)
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function escapeAttr(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;')}
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  });
-}
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
 
 loadTheme();
 checkLock();
 renderAll();
 fetchNbrbRate(false);
-setInterval(()=>fetchNbrbRate(false),1000*60*60*6); // обновление раз в 6 часов
+setInterval(()=>fetchNbrbRate(false),1000*60*60*6);
 </script>
 </body>
 </html>
