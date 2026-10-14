@@ -13,7 +13,12 @@
 :root{--bg:#16121f;--card:#221b30;--border:#3a2f52;--accent:#a855f7;--accent2:#c084fc;--text:#f0eaff;--text2:#b8a9d9;--text3:#7a6b9e;--green:#4ade80;--yellow:#fbbf24;--blue:#60a5fa;--orange:#fb923c;--red:#f87171}
 body.light{--bg:#f5f3fb;--card:#fff;--border:#e0d5f0;--text:#1a1428;--text2:#4a3d6b;--text3:#8b7ca8}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;overflow-x:hidden}
-.container{max-width:600px;margin:0 auto;padding:16px}
+/* Верхняя строка с курсом */
+.rate-bar{position:fixed;top:0;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);padding:6px 12px;font-size:11px;font-weight:700;text-align:center;z-index:150;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:8px}
+.rate-bar .rb-val{color:var(--accent2);font-weight:800}
+.rate-bar .rb-refresh{background:transparent;border:1px solid var(--border);color:var(--text3);padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;width:auto;margin:0;box-shadow:none}
+.rate-bar .rb-refresh:active{opacity:.6}
+.container{max-width:600px;margin:0 auto;padding:16px;padding-top:44px}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px}
 .top-bar h1{font-size:20px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .icon-btn{width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin:0}
@@ -53,8 +58,9 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .person-row.paid{border-left-color:var(--green)}
 .person-row.debt{border-left-color:var(--red)}
 .person-row.partial{border-left-color:var(--yellow)}
-.person-row .avatar{font-size:32px;width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:50%;flex-shrink:0;border:1px solid var(--border);position:relative}
-.person-row .avatar .status-dot{position:absolute;bottom:0;right:0;width:14px;height:14px;border-radius:50%;border:2px solid var(--card)}
+.person-row .avatar{font-size:32px;width:50px;height:50px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:50%;flex-shrink:0;border:1px solid var(--border);position:relative;overflow:hidden}
+.person-row .avatar img{width:100%;height:100%;object-fit:cover}
+.person-row .avatar .status-dot{position:absolute;bottom:0;right:0;width:14px;height:14px;border-radius:50%;border:2px solid var(--card);z-index:2}
 .person-row .avatar .status-dot.paid{background:var(--green)}
 .person-row .avatar .status-dot.debt{background:var(--red)}
 .person-row .avatar .status-dot.partial{background:var(--yellow)}
@@ -74,7 +80,8 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .swipe-hint{text-align:center;font-size:11px;color:var(--text3);padding:8px;margin-bottom:8px}
 .back-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text2);font-weight:600;cursor:pointer;font-size:14px;margin-bottom:14px;width:auto}
 .profile-head{background:var(--card);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;border:1px solid var(--border)}
-.profile-head .avatar-big{font-size:56px;margin-bottom:8px}
+.profile-head .avatar-big{font-size:56px;margin-bottom:8px;width:80px;height:80px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;border-radius:50%;overflow:hidden;background:var(--bg);border:2px solid var(--border)}
+.profile-head .avatar-big img{width:100%;height:100%;object-fit:cover}
 .profile-head .name{font-size:22px;font-weight:800;color:var(--text)}
 .profile-head .contact{font-size:13px;color:var(--text2);margin-top:6px}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
@@ -103,9 +110,12 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .field-label{font-size:12px;color:var(--text3);font-weight:600;margin-bottom:5px;margin-top:4px;display:block}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .row2 input,.row2 select{margin-bottom:10px}
-.avatar-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.avatar-opt{font-size:26px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--bg);border:2px solid var(--border);border-radius:12px;cursor:pointer}
+.avatar-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.avatar-opt{font-size:26px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--bg);border:2px solid var(--border);border-radius:12px;cursor:pointer;overflow:hidden}
+.avatar-opt img{width:100%;height:100%;object-fit:cover}
 .avatar-opt.selected{border-color:var(--accent);background:rgba(168,85,247,.15)}
+.avatar-photo-btn{display:flex;align-items:center;gap:8px;background:var(--bg);border:2px dashed var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;font-size:12px;color:var(--text2);font-weight:700}
+.avatar-photo-btn input{display:none}
 .empty{text-align:center;color:var(--text3);padding:40px 20px;font-size:14px;background:var(--card);border:1px dashed var(--border);border-radius:16px}
 .formula{text-align:center;color:var(--text3);font-size:12px;margin-top:6px;line-height:1.6}
 .pay-row{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--border);cursor:pointer}
@@ -113,7 +123,8 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .pay-row.debt{border-left-color:var(--red)}
 .pay-row.partial{border-left-color:var(--yellow)}
 .pay-row.overdue{border-left-color:#dc2626;background:rgba(220,38,38,.06)}
-.pay-row .avatar{font-size:30px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:50%;flex-shrink:0;border:1px solid var(--border)}
+.pay-row .avatar{font-size:30px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:50%;flex-shrink:0;border:1px solid var(--border);overflow:hidden}
+.pay-row .avatar img{width:100%;height:100%;object-fit:cover}
 .pay-row .info{flex:1;min-width:0}
 .pay-row .name{font-size:15px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pay-row .status{font-size:11px;font-weight:700;text-transform:uppercase}
@@ -194,7 +205,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .calc-result{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);border-radius:12px;padding:16px;margin-top:10px}
 .calc-result .cr{display:flex;justify-content:space-between;padding:6px 0;font-size:14px}
 .calc-result .cr b{color:var(--green);font-size:16px}
-/* Дашборд */
 .dash-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .dash-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
 .dash-card .dc-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:6px;letter-spacing:.5px}
@@ -212,27 +222,22 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .dash-task .dt-sub{font-size:11px;color:var(--text3)}
 .dash-task .dt-amount{font-weight:800;color:var(--red);font-size:14px;white-space:nowrap}
 .dash-task.paid .dt-amount{color:var(--green)}
-/* Фильтры */
 .filter-row{display:flex;gap:6px;overflow-x:auto;padding:2px 0;margin-bottom:10px}
 .filter-chip{padding:8px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;user-select:none}
 .filter-chip.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border-color:transparent}
-/* Валюта */
 .currency-row{display:flex;gap:6px;margin-bottom:14px}
 .currency-opt{flex:1;padding:10px;text-align:center;border-radius:12px;background:var(--card);border:1px solid var(--border);cursor:pointer;font-weight:800;font-size:14px;color:var(--text2)}
 .currency-opt.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border-color:transparent}
-/* Галерея */
 .photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .photo-grid .pg-item{position:relative;border-radius:12px;overflow:hidden;cursor:pointer;background:var(--card);border:1px solid var(--border)}
 .photo-grid .pg-item img{width:100%;height:140px;object-fit:cover;display:block}
 .photo-grid .pg-item .pg-caption{padding:6px 8px;font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--card)}
-/* Метки */
 .tags-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tag-btn{padding:8px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;user-select:none}
 .tag-btn.active-vip{background:rgba(251,191,36,.2);color:var(--yellow);border-color:rgba(251,191,36,.4)}
 .tag-btn.active-debtor{background:rgba(248,113,113,.2);color:var(--red);border-color:rgba(248,113,113,.4)}
 .tag-btn.active-new{background:rgba(74,222,128,.2);color:var(--green);border-color:rgba(74,222,128,.4)}
 .tag-btn.active-sleep{background:rgba(122,107,158,.3);color:var(--text3);border-color:var(--border)}
-/* Шаблоны */
 .tmpl-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .tmpl-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all .15s}
 .tmpl-item:active{background:var(--card);transform:scale(.98)}
@@ -241,6 +246,12 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 </style>
 </head>
 <body>
+
+<!-- Строка с курсом НБРБ -->
+<div class="rate-bar" id="rateBar">
+  <span>💱 Курс НБРБ: <span class="rb-val" id="rateValue">загрузка...</span></span>
+  <button class="rb-refresh" onclick="fetchNbrbRate(true)">🔄</button>
+</div>
 
 <div class="lock-screen" id="lockScreen">
   <h2>🔐 Введите PIN</h2>
@@ -278,6 +289,16 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
       <div class="sub" id="meGrandSub">¥ 0.00 · 0.00 кг · 0 человек</div>
     </div>
     <div class="form">
+      <h2>💱 Курс НБРБ (справочно)</h2>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;font-weight:700;margin-bottom:6px;">10 китайских юаней =</div>
+        <div style="font-size:28px;font-weight:900;color:var(--accent2);" id="rateBox">— BYN</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;" id="rateDate">—</div>
+        <button class="ghost small" style="margin-top:10px;" onclick="fetchNbrbRate(true)">🔄 Обновить</button>
+      </div>
+      <div class="formula" style="margin-top:10px;">Курс подставляется <b>только справочно</b>. В заказах вводи свой курс.</div>
+    </div>
+    <div class="form">
       <h2>🛠️ Курсы по умолчанию</h2>
       <span class="field-label">Курс юаня (¥ → BYN)</span>
       <input id="me-default-rate" type="number" step="0.0001" inputmode="decimal" placeholder="0.47">
@@ -288,7 +309,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div class="form">
       <h2>💱 Валюта отображения</h2>
       <div class="currency-row" id="currencyRow"></div>
-      <div class="formula">Все суммы в приложении будут в выбранной валюте</div>
     </div>
     <div class="form">
       <h2>🎨 Тема</h2>
@@ -353,19 +373,22 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div class="people-list" id="peopleList"></div>
   </div>
 
-  <!-- ЧЕЛОВЕК -->
   <div class="screen" id="screen-person">
     <button class="back-btn" onclick="goBack()">← Назад</button>
     <div id="personDetails"></div>
   </div>
 
-  <!-- ФОРМА ЧЕЛОВЕКА -->
   <div class="screen" id="screen-form">
     <button class="back-btn" onclick="goBack()">← Назад</button>
     <div class="form">
       <h2 id="formTitle">➕ Новый человек</h2>
-      <span class="field-label">Смайл</span>
+      <span class="field-label">Аватар</span>
       <div class="avatar-picker" id="avatarPicker"></div>
+      <label class="avatar-photo-btn">
+        📸 Загрузить фото
+        <input type="file" id="avatarPhotoInput" accept="image/*" onchange="onAvatarPhoto(event)">
+      </label>
+      <button class="ghost small" style="margin-top:8px;display:none;" id="avatarRemoveBtn" onclick="removeAvatarPhoto()">Убрать фото</button>
       <span class="field-label">Имя *</span>
       <input id="f-name" placeholder="Например: Анна" autocomplete="off">
       <span class="field-label">📞 Телефон</span>
@@ -376,11 +399,11 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     </div>
   </div>
 
-  <!-- ЗАКАЗ -->
   <div class="screen" id="screen-order">
     <button class="back-btn" onclick="openPerson(currentOrderPersonId)">← Назад</button>
     <div class="form">
       <h2 id="orderFormTitle">➕ Новый заказ</h2>
+      <div class="formula" style="margin-bottom:10px;font-size:11px;">💱 Курс НБРБ сейчас: <span id="orderRateHint" style="color:var(--accent2);font-weight:700;">—</span> (справочно, не подставляется)</div>
       <span class="field-label">Дата заказа</span>
       <input id="o-date" type="date">
       <span class="field-label">📦 Список товаров</span>
@@ -423,7 +446,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     </div>
   </div>
 
-  <!-- ОПЛАТЫ -->
   <div class="screen" id="screen-payments">
     <div class="top-bar">
       <h1>💰 Оплаты</h1>
@@ -443,7 +465,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div id="paymentsList"></div>
   </div>
 
-  <!-- ПРИБЫЛЬ -->
   <div class="screen" id="screen-profit">
     <div class="top-bar">
       <h1>💵 Прибыль</h1>
@@ -458,7 +479,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div class="form"><h2>🗂️ По категориям</h2><div id="categoryStats"></div></div>
   </div>
 
-  <!-- ФОТО -->
   <div class="screen" id="screen-photos">
     <div class="top-bar">
       <h1>📸 Фото товаров</h1>
@@ -467,7 +487,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div id="photoGallery"></div>
   </div>
 
-  <!-- ИСТОРИЯ -->
   <div class="screen" id="screen-archive">
     <div class="top-bar">
       <h1>📚 История</h1>
@@ -486,7 +505,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div id="archiveDetails"></div>
   </div>
 
-  <!-- СТАТИСТИКА -->
   <div class="screen" id="screen-stats">
     <div class="top-bar">
       <h1>📈 Статистика</h1>
@@ -525,7 +543,7 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
   </div>
 </div>
 
-<script>
+  <script>
 const KEY='kitai_people_v1';
 const ARCHIVE_KEY='kitai_archive_v1';
 const DEFAULTS_KEY='kitai_defaults_v1';
@@ -536,7 +554,9 @@ const CAT_KEY='kitai_categories_v1';
 const CURRENCY_KEY='kitai_currency_v1';
 const LAST_BACKUP_KEY='kitai_last_backup_v1';
 const TEMPLATES_KEY='kitai_templates_v1';
-const AVATARS=['🧑‍🦰','👩','🧔','👩‍🦱','🧑','👨','👩‍🦳','🧑‍🦱','👨‍🦰','👩‍🦰','🧓','👧','🧒', '🙎‍♂️', '👩‍🦱', '👩', '👨‍🦲', '👴'];
+const RATE_KEY='kitai_nbrb_rate_v1';
+const RATE_DATE_KEY='kitai_nbrb_rate_date_v1';
+const AVATARS=['🧑‍🦰','👩','🧔','👩‍🦱','🧑','👨','👩‍🦳','🧑‍🦱','👨‍🦰','👩‍🦰','🧓','👧','🧒'];
 const STATUS_LABELS={ordered:'Заказано',shipped:'В пути',arrived:'На складе',issued:'Выдано'};
 const STATUS_ICONS={ordered:'🟡',shipped:'🚚',arrived:'🛬',issued:'✅'};
 const DEFAULT_CATS=['Одежда','Обувь','Техника','Косметика','Детское','Аксессуары','Дом','Другое'];
@@ -553,7 +573,7 @@ const DEFAULT_TEMPLATES=[
 ];
 
 let currentPersonId=null,currentOrderPersonId=null,currentOrderId=null,currentArchiveKey=null;
-let selectedAvatar=AVATARS[0],activeSwipe=null,currentPhotoData=null;
+let selectedAvatar=AVATARS[0],selectedAvatarPhoto=null,activeSwipe=null,currentPhotoData=null;
 let activeTagFilter=null,activeStatsFilter='all';
 
 function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
@@ -570,6 +590,48 @@ function saveCurrency(c){localStorage.setItem(CURRENCY_KEY,c)}
 function loadTemplates(){try{return JSON.parse(localStorage.getItem(TEMPLATES_KEY)||'null')||DEFAULT_TEMPLATES.slice()}catch(e){return DEFAULT_TEMPLATES.slice()}}
 function saveTemplates(t){localStorage.setItem(TEMPLATES_KEY,JSON.stringify(t))}
 function fmtMoney(byn){const cur=loadCurrency();const c=CURRENCIES[cur];const v=byn*(c.rate||1);return v.toFixed(2)+' '+c.symbol}
+
+// ===== КУРС НБРБ =====
+function getCachedRate(){return parseFloat(localStorage.getItem(RATE_KEY)||'0')}
+function getCachedRateDate(){return localStorage.getItem(RATE_DATE_KEY)||''}
+function renderRateBar(){
+  const r=getCachedRate();
+  const d=getCachedRateDate();
+  const el=document.getElementById('rateValue');
+  if(el)el.textContent=r>0?(r.toFixed(4)+' BYN за 1 ¥'):'нет данных';
+  const box=document.getElementById('rateBox');
+  if(box)box.textContent=r>0?((r*10).toFixed(4)+' BYN'):'—';
+  const dateEl=document.getElementById('rateDate');
+  if(dateEl)dateEl.textContent=d?('Обновлено: '+d):'';
+  const hint=document.getElementById('orderRateHint');
+  if(hint)hint.textContent=r>0?(r.toFixed(4)+' BYN за 1 ¥'):'нет данных';
+}
+async function fetchNbrbRate(force){
+  const cached=getCachedRate();
+  const cachedDate=getCachedRateDate();
+  const today=new Date().toISOString().slice(0,10);
+  // Если уже свежий — берём из кэша
+  if(!force&&cached>0&&cachedDate===today){renderRateBar();return}
+  // Пробуем получить с Нацбанка
+  try{
+    const url='https://api.nbrb.by/exrates/rates/462?parammode=2';
+    const resp=await fetch(url);
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const data=await resp.json();
+    // Cur_OfficialRate = за 10 юаней
+    const rateForOne=data.Cur_OfficialRate/data.Cur_Scale;
+    if(rateForOne>0){
+      localStorage.setItem(RATE_KEY,String(rateForOne));
+      localStorage.setItem(RATE_DATE_KEY,today);
+      renderRateBar();
+      console.log('✅ Курс НБРБ получен:',rateForOne);
+    }
+  }catch(err){
+    console.warn('Не удалось получить курс НБРБ:',err.message);
+    // Показываем кэш если есть
+    renderRateBar();
+  }
+}
 
 function saveDefaults(){
   const rate=parseFloat(document.getElementById('me-default-rate').value)||0;
@@ -692,8 +754,8 @@ function delCategory(i){if(!confirm('Удалить категорию?'))return
 function renderDash(){
   const data=load();
   const t=calcTotals(data);
-  let overdueCount=0,debtCount=0;
-  data.forEach(p=>{const c=calcPerson(p);if(c.status!=='paid'&&c.total>0)debtCount++;if(c.overdue)overdueCount++;});
+  let overdueCount=0;
+  data.forEach(p=>{if(calcPerson(p).overdue)overdueCount++;});
 
   document.getElementById('dashCards').innerHTML=
     '<div class="dash-card red"><div class="dc-lbl">💰 Должны всего</div><div class="dc-val">'+fmtMoney(t.totalRemain)+'</div></div>'+
@@ -701,11 +763,9 @@ function renderDash(){
     '<div class="dash-card blue"><div class="dc-lbl">👥 Люди</div><div class="dc-val">'+data.length+'</div></div>'+
     '<div class="dash-card yellow"><div class="dc-lbl">🔥 Просрочки</div><div class="dc-val">'+overdueCount+'</div></div>';
 
-  // Задачи
   const debtors=data.filter(p=>{const c=calcPerson(p);return c.remain>0.01;})
     .map(p=>({p,c:calcPerson(p)}))
     .sort((a,b)=>b.c.remain-a.c.remain).slice(0,5);
-
   const overdue=data.filter(p=>calcPerson(p).overdue).slice(0,5);
   const newbies=data.filter(p=>(p.tags||[]).includes('new')).slice(0,5);
 
@@ -713,23 +773,22 @@ function renderDash(){
   if(overdue.length){
     tasksHtml+='<h3>🔥 Просрочки > 30 дней</h3>';
     tasksHtml+=overdue.map(p=>{const c=calcPerson(p);
-      return '<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+p.avatar+' '+escapeHtml(p.name)+'</div><div class="dt-sub">не платит давно</div></div><div class="dt-amount">'+fmtMoney(c.remain)+'</div></div>';
+      return '<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div><div class="dt-sub">не платит давно</div></div><div class="dt-amount">'+fmtMoney(c.remain)+'</div></div>';
     }).join('');
   }
   if(debtors.length){
     tasksHtml+='<h3 style="margin-top:12px;">💰 Топ должников</h3>';
     tasksHtml+=debtors.map(x=>
-      '<div class="dash-task" onclick="openPerson('+x.p.id+')"><div class="dt-info"><div class="dt-name">'+x.p.avatar+' '+escapeHtml(x.p.name)+'</div><div class="dt-sub">осталось оплатить</div></div><div class="dt-amount">'+fmtMoney(x.c.remain)+'</div></div>'
+      '<div class="dash-task" onclick="openPerson('+x.p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(x.p,28)+' '+escapeHtml(x.p.name)+'</div><div class="dt-sub">осталось оплатить</div></div><div class="dt-amount">'+fmtMoney(x.c.remain)+'</div></div>'
     ).join('');
   }
   if(newbies.length){
     tasksHtml+='<h3 style="margin-top:12px;">🆕 Новые клиенты</h3>';
-    tasksHtml+=newbies.map(p=>'<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+p.avatar+' '+escapeHtml(p.name)+'</div></div><div class="dt-amount" style="color:var(--green);">🆕</div></div>').join('');
+    tasksHtml+=newbies.map(p=>'<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div></div><div class="dt-amount" style="color:var(--green);">🆕</div></div>').join('');
   }
   if(!tasksHtml)tasksHtml='<div style="text-align:center;color:var(--text3);padding:12px;font-size:13px;">Всё отлично! 🎉</div>';
   document.getElementById('dashTasks').innerHTML=tasksHtml;
 
-  // График за 6 месяцев
   const months={};
   data.forEach(p=>(p.orders||[]).forEach(o=>{
     if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);
@@ -745,11 +804,10 @@ function renderDash(){
   const maxV=Math.max(1,...last6.map(x=>x.val));
   document.getElementById('dashChart').innerHTML=last6.map(x=>{
     const pct=(x.val/maxV*100);
-    return '<div><div class="month-label">'+x.label+'</div><div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,8)+'%">'+(x.val>0?fmtMoney(x.val).split(' ')[0]+' '+fmtMoney(x.val).split(' ')[1]:'0')+'</div></div></div>';
+    return '<div><div class="month-label">'+x.label+'</div><div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,8)+'%">'+fmtMoney(x.val)+'</div></div></div>';
   }).join('');
 }
 
-// ===== ПРОФИЛЬ =====
 function renderMe(){
   const def=getDefaults();
   document.getElementById('me-default-rate').value=def.rate||'';
@@ -776,6 +834,15 @@ function renderTagFilter(){
     keys.map(k=>'<div class="filter-chip '+(activeTagFilter===k?'active':'')+'" onclick="setTagFilter(\''+k+'\')">'+TAGS[k].label+'</div>').join('');
 }
 function setTagFilter(k){activeTagFilter=k;renderTagFilter();renderPeople();}
+
+// ===== АВАТАР =====
+function getAvatarHtml(p,size){
+  const s=size||'50';
+  if(p.photo){
+    return '<img src="'+p.photo+'" style="width:100%;height:100%;object-fit:cover;">';
+  }
+  return p.avatar||'🧑';
+}
 
 function renderPeople(){
   let data=load();
@@ -804,7 +871,7 @@ function renderPeople(){
         '<div class="act act-del" onclick="event.stopPropagation();deletePerson('+p.id+')"><span class="ai">🗑</span>Удалить</div>'+
       '</div>'+
       '<div class="person-row '+c.status+'" onclick="openPerson('+p.id+')">'+
-        '<div class="avatar">'+p.avatar+'<span class="status-dot '+c.status+'"></span></div>'+
+        '<div class="avatar">'+getAvatarHtml(p)+'<span class="status-dot '+c.status+'"></span></div>'+
         '<div class="info"><div class="name">'+escapeHtml(p.name)+tags+'</div>'+
         '<div class="sub">'+c.ordersCount+' '+plural(c.ordersCount,'заказ','заказа','заказов')+' · '+c.weight.toFixed(2)+' кг · ¥'+c.yuan.toFixed(2)+'</div>'+
         spark+'</div>'+
@@ -851,7 +918,7 @@ function attachSwipe(){
     row.addEventListener('touchend',()=>{
       dragging=false;row.style.transition='transform .2s ease';
       if(currentX<-60){row.style.transform='translateX(-'+maxR+'px)';activeSwipe=wrap;}
-      else if(currentX>40){row.style.transform='translateX(0)';setTimeout(()=>{quickAddOrder(parseInt(wrap.dataset.id));},100);currentX=0;}
+      else if(currentX>40){row.style.transform='translateX(0)';setTimeout(()=>{openAddOrder(parseInt(wrap.dataset.id));},100);currentX=0;}
       else{row.style.transform='translateX(0)';if(activeSwipe===wrap)activeSwipe=null;}
     });
     row.addEventListener('click',e=>{
@@ -860,9 +927,8 @@ function attachSwipe(){
   });
 }
 
-function quickAddOrder(id){currentOrderPersonId=id;currentOrderId=null;currentPhotoData=null;openAddOrder(id);}
+function quickAddOrder(id){openAddOrder(id);}
 
-// ===== ЧЕЛОВЕК =====
 function openPerson(id){
   const data=load();const p=data.find(x=>x.id===id);if(!p)return;
   currentOrderPersonId=id;const c=calcPerson(p);
@@ -921,7 +987,7 @@ function openPerson(id){
 
   document.getElementById('personDetails').innerHTML=
     '<div class="profile-head">'+
-    '<div class="avatar-big">'+p.avatar+'</div>'+
+    '<div class="avatar-big">'+getAvatarHtml(p,80)+'</div>'+
     '<div class="name">'+escapeHtml(p.name)+'</div>'+
     (p.phone?'<div class="contact">📞 '+escapeHtml(p.phone)+'</div>':'')+
     (p.telegram?'<div class="contact">💬 @'+escapeHtml(tel)+'</div>':'')+'</div>'+
@@ -1035,26 +1101,52 @@ function showInvoice(id){
 }
 
 function openAddForm(){
-  currentPersonId=null;
+  currentPersonId=null;selectedAvatarPhoto=null;
   document.getElementById('formTitle').textContent='➕ Новый человек';
   document.getElementById('formSaveBtn').textContent='💾 Сохранить';
   document.getElementById('f-name').value='';document.getElementById('f-phone').value='';document.getElementById('f-telegram').value='';
-  selectedAvatar=AVATARS[0];renderAvatarPicker();switchScreen('form');
+  selectedAvatar=AVATARS[0];
+  document.getElementById('avatarRemoveBtn').style.display='none';
+  renderAvatarPicker();switchScreen('form');
 }
 function openEditForm(id){
   const p=load().find(x=>x.id===id);if(!p)return;
-  currentPersonId=id;
+  currentPersonId=id;selectedAvatarPhoto=p.photo||null;
   document.getElementById('formTitle').textContent='✏️ Редактировать';
   document.getElementById('formSaveBtn').textContent='💾 Обновить';
   document.getElementById('f-name').value=p.name;
   document.getElementById('f-phone').value=p.phone||'';
   document.getElementById('f-telegram').value=p.telegram||'';
-  selectedAvatar=p.avatar;renderAvatarPicker();switchScreen('form');
+  selectedAvatar=p.avatar||AVATARS[0];
+  document.getElementById('avatarRemoveBtn').style.display=selectedAvatarPhoto?'block':'none';
+  renderAvatarPicker();switchScreen('form');
 }
 function renderAvatarPicker(){
-  document.getElementById('avatarPicker').innerHTML=AVATARS.map(a=>'<div class="avatar-opt '+(a===selectedAvatar?'selected':'')+'" onclick="pickAvatar(\''+a+'\')">'+a+'</div>').join('');
+  const el=document.getElementById('avatarPicker');
+  el.innerHTML=AVATARS.map(a=>'<div class="avatar-opt '+(a===selectedAvatar&&!selectedAvatarPhoto?'selected':'')+'" onclick="pickAvatar(\''+a+'\')">'+a+'</div>').join('')+
+    (selectedAvatarPhoto?'<div class="avatar-opt selected"><img src="'+selectedAvatarPhoto+'"></div>':'');
 }
-function pickAvatar(a){selectedAvatar=a;renderAvatarPicker()}
+function pickAvatar(a){selectedAvatar=a;selectedAvatarPhoto=null;document.getElementById('avatarRemoveBtn').style.display='none';renderAvatarPicker();}
+function onAvatarPhoto(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      let w=img.width,h=img.height,maxSize=400;
+      if(w>h&&w>maxSize){h=h*maxSize/w;w=maxSize}else if(h>maxSize){w=w*maxSize/h;h=maxSize}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      selectedAvatarPhoto=canvas.toDataURL('image/jpeg',0.7);
+      document.getElementById('avatarRemoveBtn').style.display='block';
+      renderAvatarPicker();
+    };
+    img.src=ev.target.result;
+  };
+  r.readAsDataURL(f);
+}
+function removeAvatarPhoto(){selectedAvatarPhoto=null;document.getElementById('avatarRemoveBtn').style.display='none';renderAvatarPicker();}
 function savePerson(){
   const name=document.getElementById('f-name').value.trim();
   const phone=document.getElementById('f-phone').value.trim();
@@ -1063,9 +1155,9 @@ function savePerson(){
   const data=load();
   if(currentPersonId){
     const idx=data.findIndex(p=>p.id===currentPersonId);
-    if(idx>=0)data[idx]=Object.assign({},data[idx],{name,phone,telegram,avatar:selectedAvatar});
+    if(idx>=0)data[idx]=Object.assign({},data[idx],{name,phone,telegram,avatar:selectedAvatar,photo:selectedAvatarPhoto});
   }else{
-    data.push({id:Date.now(),name,phone,telegram,avatar:selectedAvatar,orders:[],payments:[],tags:['new']});
+    data.push({id:Date.now(),name,phone,telegram,avatar:selectedAvatar,photo:selectedAvatarPhoto,orders:[],payments:[],tags:['new']});
   }
   save(data);switchScreen('people');
 }
@@ -1185,7 +1277,7 @@ function renderPayments(){
     if(c.overpay>0.01){amountLine='+'+fmtMoney(c.overpay)+' (переплата)';amountColor='var(--green)'}
     else{amountLine=fmtMoney(c.remain);amountColor=c.status==='paid'?'var(--green)':(c.status==='partial'?'var(--yellow)':'var(--red)')}
     return '<div class="pay-row '+cls+'" onclick="openPerson('+p.id+')">'+
-      '<div class="avatar">'+p.avatar+'</div>'+
+      '<div class="avatar">'+getAvatarHtml(p)+'</div>'+
       '<div class="info"><div class="name">'+escapeHtml(p.name)+'</div><div class="status">'+st+'</div></div>'+
       '<div class="amounts"><span class="total-text">из '+fmtMoney(c.total)+'</span>'+
       '<span class="remain-text" style="color:'+amountColor+'">'+amountLine+'</span></div></div>';
@@ -1280,7 +1372,7 @@ function openArchive(key){
   const peopleHtml=a.people.map(p=>{
     const c=calcPerson(p);
     return '<div class="order-item" style="cursor:pointer;" onclick="openArchivePerson(\''+key+'\','+p.id+')">'+
-      '<div class="head"><div class="date">'+p.avatar+' '+escapeHtml(p.name)+'</div>'+
+      '<div class="head"><div class="date">'+escapeHtml(p.name)+'</div>'+
       '<div class="order-total">'+fmtMoney(c.total)+'</div></div>'+
       '<div class="row-small">'+c.ordersCount+' заказ(ов) · '+c.weight.toFixed(2)+' кг · ¥'+c.yuan.toFixed(2)+'</div>'+
       '<div class="row-small">Оплачено: '+fmtMoney(c.paid)+' · Остаток: '+fmtMoney(c.remain)+'</div></div>';
@@ -1314,7 +1406,7 @@ function openArchivePerson(key,personId){
       (o.photo?'<div><img class="photo-thumb" src="'+o.photo+'"></div>':'')+'</div>';
   }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Заказов нет</div>';
   document.getElementById('archiveDetails').innerHTML=
-    '<div class="profile-head"><div class="avatar-big">'+p.avatar+'</div><div class="name">'+escapeHtml(p.name)+'</div>'+
+    '<div class="profile-head"><div class="avatar-big">'+getAvatarHtml(p,80)+'</div><div class="name">'+escapeHtml(p.name)+'</div>'+
     (p.phone?'<div class="contact">📞 '+escapeHtml(p.phone)+'</div>':'')+
     (p.telegram?'<div class="contact">💬 @'+escapeHtml(p.telegram)+'</div>':'')+'</div>'+
     '<div class="total-big"><div class="lbl">Итого за месяц</div><div class="val">'+fmtMoney(c.total)+'</div></div>'+
@@ -1374,7 +1466,6 @@ function renderStats(){
   let all=[];
   allPeople.forEach(p=>(p.orders||[]).forEach(o=>all.push({person:p,order:o})));
 
-  // Фильтры
   if(activeStatsFilter==='month'){
     const now=new Date();const key=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
     all=all.filter(x=>(x.order.date||'').startsWith(key));
@@ -1393,7 +1484,7 @@ function renderStats(){
   document.getElementById('allOrders').innerHTML=all.length?all.slice(0,80).map(x=>{
     const c=calcOrder(x.order);
     return '<div class="order-item">'+
-      '<div class="head"><div class="date">'+(x.order.date?new Date(x.order.date).toLocaleDateString('ru-RU'):'—')+' · '+x.person.avatar+' '+escapeHtml(x.person.name)+'</div>'+
+      '<div class="head"><div class="date">'+(x.order.date?new Date(x.order.date).toLocaleDateString('ru-RU'):'—')+' · '+escapeHtml(x.person.name)+'</div>'+
       '<div class="order-total">'+fmtMoney(c.total)+'</div></div>'+
       (x.order.items?'<div class="row-small">📦 '+escapeHtml(x.order.items)+'</div>':'')+
       (x.order.track?'<div class="row-small">🔖 '+escapeHtml(x.order.track)+'</div>':'')+
@@ -1486,6 +1577,8 @@ if ('serviceWorker' in navigator) {
 loadTheme();
 checkLock();
 renderAll();
+fetchNbrbRate(false);
+setInterval(()=>fetchNbrbRate(false),1000*60*60*6); // обновление раз в 6 часов
 </script>
 </body>
 </html>
