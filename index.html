@@ -850,7 +850,7 @@ function renderDash(){
 
   data.forEach(p=>{
     const c = calcPerson(p);
-    // ФОРМУЛЫ: (Сумма для клиента) - (Вес/Юани * Мой закупочный курс)
+    // ЧЕТКАЯ ФОРМУЛА ДЛЯ ГЛАВНОЙ
     totalCleanDeliv += (c.deliv - (c.weight * cleanDelivRate));
     totalCleanBuy += (c.goods - (c.yuan * cleanBuyRate));
   });
@@ -1013,7 +1013,7 @@ function openPerson(id){
   
   const def=getDefaults();
   
-  // ФОРМУЛЫ ДЛЯ КЛИЕНТА
+  // ПРАВИЛЬНЫЕ ФОРМУЛЫ ДЛЯ КЛИЕНТА
   const cleanDelivSum = c.deliv - (c.weight * (def.cleanDelivRate || 0));
   const cleanBuySum = c.goods - (c.yuan * (def.cleanBuyRate || 0));
 
