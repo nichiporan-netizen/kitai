@@ -6,10 +6,6 @@
 <title>Учёт Китай</title>
 <meta name="theme-color" content="#a855f7">
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--bg:#16121f;--card:#221b30;--border:#3a2f52;--accent:#a855f7;--accent2:#c084fc;--text:#f0eaff;--text2:#b8a9d9;--text3:#7a6b9e;--green:#4ade80;--yellow:#fbbf24;--blue:#60a5fa;--orange:#fb923c;--red:#f87171;--teal:#2dd4bf}
@@ -528,29 +524,43 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
   </div>
 </div>
 
+<!-- Firebase Modules -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  // ВАШИ КЛЮЧИ ДЛЯ ПРОЕКТА "УЧЁТ КИТАЙ"
+  const firebaseConfig = {
+    apiKey: "AIzaSyChxc101ECIQcvYTXaChzd7nR7aNUTVqNs",
+    authDomain: "kitai-87aa5.firebaseapp.com",
+    projectId: "kitai-87aa5",
+    storageBucket: "kitai-87aa5.firebasestorage.app",
+    messagingSenderId: "634700485091",
+    appId: "1:634700485091:web:1be67f0c2c3f55a6c090d6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.FB = { app, auth, db, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, doc, setDoc, getDoc };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
 <script>
-// ============ FIREBASE ============
-const firebaseConfig = {
-  apiKey: "AIzaSyChxc101ECIQcvYTXaChzd7nR7aNUTVqNs",
-  authDomain: "kitai-87aa5.firebaseapp.com",
-  projectId: "kitai-87aa5",
-  storageBucket: "kitai-87aa5.firebasestorage.app",
-  messagingSenderId: "634700485091",
-  appId: "1:634700485091:web:1be67f0c2c3f55a6c090d6"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const fdb = firebase.firestore();
-
-const ADMIN_EMAIL = 'nichiporan@gmail.com';
+// ============ СОСТОЯНИЕ ============
+let currentUser=null;
+let currentPersonId=null,currentOrderPersonId=null,currentOrderId=null,currentArchiveKey=null;
+let selectedAvatar='🧑‍🦰',selectedAvatarPhoto=null,currentPhotoData=null;
+let activeTagFilter=null,activeStatsFilter='all';
+let userData={ people:[], archive:{} };
 
 const KEY='kitai_people_v1';
 const ARCHIVE_KEY='kitai_archive_v1';
 const DEFAULTS_KEY='kitai_defaults_v1';
 const THEME_KEY='kitai_theme_v1';
 const COLOR_KEY='kitai_color_v1';
-const PIN_KEY='kitai_pin_v1';
 const CAT_KEY='kitai_categories_v1';
 const CURRENCY_KEY='kitai_currency_v1';
 const LAST_BACKUP_KEY='kitai_last_backup_v1';
@@ -572,73 +582,45 @@ const DEFAULT_TEMPLATES=[
   {id:4,name:'📊 Счёт готов',text:'Готов счёт по твоему заказу. Скинул детали.'}
 ];
 
-// ============ СОСТОЯНИЕ ============
-let currentUser=null;
-let currentPersonId=null,currentOrderPersonId=null,currentOrderId=null,currentArchiveKey=null;
-let selectedAvatar=AVATARS[0],selectedAvatarPhoto=null,currentPhotoData=null;
-let activeTagFilter=null,activeStatsFilter='all';
-let userData={ people:[], archive:{} };
-let lastLocalUpdate=0;
-let unsubSnapshot=null;
-
 // ============ ДАННЫЕ ============
-function load(){ 
-  // ИСПРАВЛЕНИЕ: Пытаемся взять из памяти, если нет - из LocalStorage
-  if (!userData.people || userData.people.length === 0) {
-    try {
-      const local = localStorage.getItem(KEY);
-      if (local) userData.people = JSON.parse(local);
-    } catch(e) {}
-  }
-  return userData.people || []; 
-}
+function load(){ return userData.people || []; }
 
 function save(data){
   userData.people = data;
-  lastLocalUpdate = Date.now();
+  // 1. Мгновенно сохраняем локально
+  localStorage.setItem(KEY, JSON.stringify(data));
   
-  // ИСПРАВЛЕНИЕ: Сначала сохраняем локально, чтобы при обновлении страницы данные не пропали
-  try {
-    localStorage.setItem(KEY, JSON.stringify(data));
-  } catch(e) { console.error("Ошибка локального сохранения", e); }
-
-  // Потом пытаемся отправить в Firebase
-  if(!currentUser || !fdb) return;
+  // 2. Отправляем в Firebase (в папку users/UID/data/main)
+  if(!currentUser || !window.FB) return;
   updateSyncBadge('syncing');
-  fdb.collection('kitai_users').doc(currentUser.uid).set({
-    people: data,
+  
+  const { db: fdb, doc, setDoc } = window.FB;
+  const ref = doc(fdb, 'users', currentUser.uid, 'data', 'main');
+  
+  setDoc(ref, { 
+    people: data, 
     archive: userData.archive || {},
-    updated: lastLocalUpdate
-  }, { merge: true }).then(()=>updateSyncBadge('online')).catch(e=>{console.error(e);updateSyncBadge('offline');});
+    updatedAt: Date.now() 
+  }, { merge: true })
+  .then(()=>updateSyncBadge('online'))
+  .catch(e=>{console.error("Firebase save error:", e); updateSyncBadge('offline');});
 }
 
 function saveArchive(a){
   userData.archive = a;
-  lastLocalUpdate = Date.now();
+  localStorage.setItem(ARCHIVE_KEY, JSON.stringify(a));
   
-  // ИСПРАВЛЕНИЕ: Локальное сохранение архива
-  try {
-    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(a));
-  } catch(e) {}
-
-  if(!currentUser || !fdb) return;
-  fdb.collection('kitai_users').doc(currentUser.uid).set({
+  if(!currentUser || !window.FB) return;
+  const { db: fdb, doc, setDoc } = window.FB;
+  const ref = doc(fdb, 'users', currentUser.uid, 'data', 'main');
+  setDoc(ref, { 
     people: userData.people || [],
     archive: a,
-    updated: lastLocalUpdate
+    updatedAt: Date.now() 
   }, { merge: true }).catch(e=>console.error(e));
 }
 
-function loadArchive(){ 
-  if (!userData.archive || Object.keys(userData.archive).length === 0) {
-    try {
-      const local = localStorage.getItem(ARCHIVE_KEY);
-      if (local) userData.archive = JSON.parse(local);
-    } catch(e) {}
-  }
-  return userData.archive || {}; 
-}
-
+function loadArchive(){ return userData.archive || {}; }
 function loadDefaults(){try{return JSON.parse(localStorage.getItem(DEFAULTS_KEY)||'{}')}catch(e){return{}}}
 function getDefaults(){return loadDefaults()}
 function loadCats(){try{let c=JSON.parse(localStorage.getItem(CAT_KEY)||'null');if(!c||!c.length){c=DEFAULT_CATS.slice();localStorage.setItem(CAT_KEY,JSON.stringify(c));}return c}catch(e){return DEFAULT_CATS.slice()}}
@@ -650,11 +632,13 @@ function loadTemplates(){try{return JSON.parse(localStorage.getItem(TEMPLATES_KE
 function saveTemplates(t){localStorage.setItem(TEMPLATES_KEY,JSON.stringify(t))}
 function fmtMoney(byn){const cur=loadCurrency();const c=CURRENCIES[cur];const v=byn*(c.rate||1);return v.toFixed(2)+' '+c.symbol}
 
-// ============ ВХОД ============
+// ============ ВХОД / FIREBASE ============
 function doLogin(){
-  const provider = new firebase.auth.GoogleAuthProvider();
+  if(!window.FB) return;
+  const { auth, GoogleAuthProvider, signInWithPopup } = window.FB;
+  const provider = new GoogleAuthProvider();
   provider.setCustomParameters({prompt:'select_account'});
-  auth.signInWithPopup(provider).catch(err=>{
+  signInWithPopup(auth, provider).catch(err=>{
     console.error(err);
     alert('Ошибка входа: '+err.message);
   });
@@ -662,65 +646,83 @@ function doLogin(){
 
 function doLogout(){
   if(!confirm('Выйти из аккаунта?')) return;
-  if(unsubSnapshot){unsubSnapshot();unsubSnapshot=null;}
-  auth.signOut();
+  if(window.FB) {
+    const { auth, signOut } = window.FB;
+    signOut(auth);
+  }
 }
 
-auth.onAuthStateChanged(user=>{
-  if(user){
-    // УБРАНА ПРОВЕРКА НА АДМИНА, чтобы вы могли зайти со своего аккаунта
-    // if(user.email !== ADMIN_EMAIL){
-    //   auth.signOut();
-    //   alert('Доступ запрещён. Это приложение только для владельца.');
-    //   return;
-    // }
+function initFirebase() {
+  const { auth, onAuthStateChanged } = window.FB;
+  
+  onAuthStateChanged(auth, user => {
+    if(user){
+      currentUser = user;
+      document.getElementById('loadingScreen').style.display='none';
+      document.getElementById('loginScreen').classList.remove('active');
+      document.getElementById('appContainer').style.display='block';
+      document.getElementById('appMenu').style.display='flex';
+      document.getElementById('syncBadge').style.display='block';
 
-    currentUser=user;
-    document.getElementById('loadingScreen').style.display='none';
-    document.getElementById('loginScreen').classList.remove('active');
-    document.getElementById('appContainer').style.display='block';
-    document.getElementById('appMenu').style.display='flex';
-    document.getElementById('syncBadge').style.display='block';
+      document.getElementById('userAvatar').src = user.photoURL || 'https://www.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png';
+      document.getElementById('userName').textContent = user.displayName || 'Пользователь';
+      document.getElementById('userEmail').textContent = user.email || '';
 
-    const av = document.getElementById('userAvatar');
-    const nm = document.getElementById('userName');
-    const em = document.getElementById('userEmail');
-    if(av) av.src = user.photoURL || 'https://www.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png';
-    if(nm) nm.textContent = user.displayName || 'Пользователь';
-    if(em) em.textContent = user.email || '';
+      loadFromFirestore(user.uid);
+    } else {
+      currentUser = null;
+      userData = {people:[], archive:{}};
+      document.getElementById('loadingScreen').style.display='none';
+      document.getElementById('loginScreen').classList.add('active');
+      document.getElementById('appContainer').style.display='none';
+      document.getElementById('appMenu').style.display='none';
+      document.getElementById('syncBadge').style.display='none';
+    }
+  });
+}
 
-    if(unsubSnapshot) unsubSnapshot();
-    unsubSnapshot = fdb.collection('kitai_users').doc(user.uid).onSnapshot(snap=>{
-      if(snap.exists()){
-        const d = snap.data();
-        const cloudTime = d.updated || 0;
-        if(cloudTime > lastLocalUpdate){
-          userData.people = d.people || [];
-          userData.archive = d.archive || {};
-          lastLocalUpdate = cloudTime;
-          renderAll();
-        }
-      }else{
-        userData.people = [];
-        userData.archive = {};
-        renderAll();
+async function loadFromFirestore(uid) {
+  updateSyncBadge('syncing');
+  try {
+    const { db: fdb, doc, getDoc } = window.FB;
+    // СТРУКТУРА КАК В ПОСЫЛКАХ: users/UID/data/main
+    const ref = doc(fdb, 'users', uid, 'data', 'main');
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      const data = snap.data() || {};
+      userData.people = data.people || [];
+      userData.archive = data.archive || {};
+      // Синхронизируем локальную память с облаком
+      localStorage.setItem(KEY, JSON.stringify(userData.people));
+      localStorage.setItem(ARCHIVE_KEY, JSON.stringify(userData.archive));
+    } else {
+      // Если в облаке пусто, берем из памяти (на случай если инет отвалился)
+      const localPeople = localStorage.getItem(KEY);
+      const localArchive = localStorage.getItem(ARCHIVE_KEY);
+      if (localPeople) userData.people = JSON.parse(localPeople);
+      if (localArchive) userData.archive = JSON.parse(localArchive);
+      
+      // И отправляем в облако
+      if (userData.people.length > 0 || Object.keys(userData.archive).length > 0) {
+        save(userData.people);
+        saveArchive(userData.archive);
       }
-      updateSyncBadge('online');
-    }, err=>{
-      console.error(err);
-      updateSyncBadge('offline');
-    });
-  }else{
-    currentUser=null;
-    userData={people:[],archive:{}};
-    if(unsubSnapshot){unsubSnapshot();unsubSnapshot=null;}
-    document.getElementById('loadingScreen').style.display='none';
-    document.getElementById('loginScreen').classList.add('active');
-    document.getElementById('appContainer').style.display='none';
-    document.getElementById('appMenu').style.display='none';
-    document.getElementById('syncBadge').style.display='none';
+    }
+
+    renderAll();
+  } catch (e) {
+    console.error(e);
+    // Если ошибка сети, грузим из памяти
+    const localPeople = localStorage.getItem(KEY);
+    const localArchive = localStorage.getItem(ARCHIVE_KEY);
+    if (localPeople) userData.people = JSON.parse(localPeople);
+    if (localArchive) userData.archive = JSON.parse(localArchive);
+    renderAll();
+  } finally {
+    updateSyncBadge('online');
   }
-});
+}
 
 function updateSyncBadge(state){
   const b=document.getElementById('syncBadge');
@@ -729,6 +731,10 @@ function updateSyncBadge(state){
   else if(state==='syncing'){b.className='sync-badge syncing';b.style.opacity='1';b.textContent='⏳ Сохранение...';}
   else{b.className='sync-badge offline';b.style.opacity='1';b.textContent='⚠️ Нет связи';}
 }
+
+// Запуск Firebase после загрузки модулей
+if (window.FB) { initFirebase(); }
+else { window.addEventListener('firebase-ready', initFirebase); }
 
 // ============ РАСЧЁТЫ ============
 function calcOrder(o){
@@ -831,7 +837,7 @@ function addCategory(){
 }
 function delCategory(i){if(!confirm('Удалить?'))return;const cats=loadCats();cats.splice(i,1);saveCats(cats);renderCats();}
 
-function getAvatarHtml(p,size){
+function getAvatarHtml(p){
   if(p.photo)return '<img src="'+p.photo+'" style="width:100%;height:100%;object-fit:cover;">';
   return p.avatar||'🧑';
 }
@@ -869,9 +875,9 @@ function renderDash(){
   const newbies=data.filter(p=>(p.tags||[]).includes('new')).slice(0,5);
   
   let tasksHtml='';
-  if(overdue.length){tasksHtml+='<h3>🔥 Просрочки > 30 дней</h3>';tasksHtml+=overdue.map(p=>{const c=calcPerson(p);return '<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div><div class="dt-sub">не платит давно</div></div><div class="dt-amount">'+fmtMoney(c.remain)+'</div></div>';}).join('');}
-  if(debtors.length){tasksHtml+='<h3 style="margin-top:12px;">💰 Топ должников</h3>';tasksHtml+=debtors.map(x=>'<div class="dash-task" onclick="openPerson('+x.p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(x.p,28)+' '+escapeHtml(x.p.name)+'</div><div class="dt-sub">осталось оплатить</div></div><div class="dt-amount">'+fmtMoney(x.c.remain)+'</div></div>').join('');}
-  if(newbies.length){tasksHtml+='<h3 style="margin-top:12px;">🆕 Новые клиенты</h3>';tasksHtml+=newbies.map(p=>'<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p,28)+' '+escapeHtml(p.name)+'</div></div><div class="dt-amount" style="color:var(--green);">🆕</div></div>').join('');}
+  if(overdue.length){tasksHtml+='<h3>🔥 Просрочки > 30 дней</h3>';tasksHtml+=overdue.map(p=>{const c=calcPerson(p);return '<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p)+' '+escapeHtml(p.name)+'</div><div class="dt-sub">не платит давно</div></div><div class="dt-amount">'+fmtMoney(c.remain)+'</div></div>';}).join('');}
+  if(debtors.length){tasksHtml+='<h3 style="margin-top:12px;">💰 Топ должников</h3>';tasksHtml+=debtors.map(x=>'<div class="dash-task" onclick="openPerson('+x.p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(x.p)+' '+escapeHtml(x.p.name)+'</div><div class="dt-sub">осталось оплатить</div></div><div class="dt-amount">'+fmtMoney(x.c.remain)+'</div></div>').join('');}
+  if(newbies.length){tasksHtml+='<h3 style="margin-top:12px;">🆕 Новые клиенты</h3>';tasksHtml+=newbies.map(p=>'<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p)+' '+escapeHtml(p.name)+'</div></div><div class="dt-amount" style="color:var(--green);">🆕</div></div>').join('');}
   if(!tasksHtml)tasksHtml='<div style="text-align:center;color:var(--text3);padding:12px;font-size:13px;">Всё отлично! 🎉</div>';
   document.getElementById('dashTasks').innerHTML=tasksHtml;
   
@@ -1010,7 +1016,7 @@ function openPerson(id){
   const tmplHtml=templates.map(t=>'<div class="tmpl-item" onclick="useTemplate('+p.id+','+t.id+')"><div class="tmpl-name">'+escapeHtml(t.name)+'</div><div class="tmpl-text">'+escapeHtml(t.text)+'</div></div>').join('');
 
   document.getElementById('personDetails').innerHTML=
-    '<div class="profile-head"><div class="avatar-big">'+getAvatarHtml(p,80)+'</div>'+
+    '<div class="profile-head"><div class="avatar-big">'+getAvatarHtml(p)+'</div>'+
     '<div class="name">'+escapeHtml(p.name)+'</div>'+
     (p.phone?'<div class="contact">📞 '+escapeHtml(p.phone)+'</div>':'')+
     (p.telegram?'<div class="contact">💬 @'+escapeHtml(tel)+'</div>':'')+'</div>'+
@@ -1408,7 +1414,7 @@ function openArchivePerson(key,personId){
       (o.photo?'<div><img class="photo-thumb" src="'+o.photo+'"></div>':'')+'</div>';
   }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Заказов нет</div>';
   document.getElementById('archiveDetails').innerHTML=
-    '<div class="profile-head"><div class="avatar-big">'+getAvatarHtml(p,80)+'</div><div class="name">'+escapeHtml(p.name)+'</div>'+
+    '<div class="profile-head"><div class="avatar-big">'+getAvatarHtml(p)+'</div><div class="name">'+escapeHtml(p.name)+'</div>'+
     (p.phone?'<div class="contact">📞 '+escapeHtml(p.phone)+'</div>':'')+'</div>'+
     '<div class="total-big"><div class="lbl">Итого за месяц</div><div class="val">'+fmtMoney(c.total)+'</div></div>'+
     '<div class="stats-grid">'+
