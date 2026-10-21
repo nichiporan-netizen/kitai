@@ -280,6 +280,11 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div class="top-bar"><h1>🏠 Главная</h1><button class="icon-btn" onclick="toggleTheme()">🌙</button></div>
     <div class="dash-cards" id="dashCards"></div>
     <div class="dash-tasks" id="dashTasks"></div>
+    <div class="close-month-box">
+      <h3>🔒 Закрыть текущий месяц</h3>
+      <p>Все люди и заказы уйдут в историю. Список обнулится.</p>
+      <button onclick="closeMonth()">📦 Закрыть месяц</button>
+    </div>
   </div>
 
   <!-- СТАТИСТИКА -->
@@ -490,11 +495,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 
   <div class="screen" id="screen-archive">
     <div class="top-bar"><h1>📚 История</h1><button class="icon-btn" onclick="toggleTheme()">🌙</button></div>
-    <div class="close-month-box">
-      <h3>🔒 Закрыть текущий месяц</h3>
-      <p>Все люди и заказы уйдут в историю. Список обнулится.</p>
-      <button onclick="closeMonth()">📦 Закрыть месяц</button>
-    </div>
     <div id="archiveList"></div>
   </div>
 
@@ -850,8 +850,9 @@ function renderDash(){
 
   data.forEach(p=>{
     const c = calcPerson(p);
-    totalCleanDeliv += (c.deliv - (c.weight * (def.kg || 0)));
-    totalCleanBuy += (c.goods - (c.yuan * (def.rate || 0)));
+    // ФОРМУЛЫ: (Сумма для клиента) - (Вес/Юани * Мой закупочный курс)
+    totalCleanDeliv += (c.deliv - (c.weight * cleanDelivRate));
+    totalCleanBuy += (c.goods - (c.yuan * cleanBuyRate));
   });
 
   let overdueCount=0;data.forEach(p=>{if(calcPerson(p).overdue)overdueCount++;});
@@ -1012,6 +1013,7 @@ function openPerson(id){
   
   const def=getDefaults();
   
+  // ФОРМУЛЫ ДЛЯ КЛИЕНТА
   const cleanDelivSum = c.deliv - (c.weight * (def.cleanDelivRate || 0));
   const cleanBuySum = c.goods - (c.yuan * (def.cleanBuyRate || 0));
 
