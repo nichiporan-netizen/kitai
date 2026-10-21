@@ -6,6 +6,13 @@
 <title>Учёт Китай</title>
 <meta name="theme-color" content="#a855f7">
 
+<!-- PWA Настройки -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Учёт Китай">
+<link rel="apple-touch-icon" href="icon-192.png">
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--bg:#16121f;--card:#221b30;--border:#3a2f52;--accent:#a855f7;--accent2:#c084fc;--text:#f0eaff;--text2:#b8a9d9;--text3:#7a6b9e;--green:#4ade80;--yellow:#fbbf24;--blue:#60a5fa;--orange:#fb923c;--red:#f87171;--teal:#2dd4bf}
@@ -50,7 +57,7 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .person-card .avatar .status-dot.debt{background:var(--red)}
 .person-card .avatar .status-dot.partial{background:var(--yellow)}
 .person-card .info{flex:1;min-width:0}
-.person-card .name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.person-card .name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;flex-wrap:wrap;gap:6px;}
 .person-card .sub{font-size:12px;color:var(--text3)}
 .person-card .amount{text-align:right;flex-shrink:0}
 .person-card .amount .byn{font-size:16px;font-weight:800;color:var(--green)}
@@ -218,7 +225,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .tag-btn.active-vip{background:rgba(251,191,36,.2);color:var(--yellow);border-color:rgba(251,191,36,.4)}
 .tag-btn.active-debtor{background:rgba(248,113,113,.2);color:var(--red);border-color:rgba(248,113,113,.4)}
 .tag-btn.active-new{background:rgba(74,222,128,.2);color:var(--green);border-color:rgba(74,222,128,.4)}
-.tag-btn.active-sleep{background:rgba(122,107,158,.3);color:var(--text3);border-color:var(--border)}
 .tmpl-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .tmpl-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all .15s}
 .tmpl-item:active{background:var(--card);transform:scale(.98)}
@@ -242,23 +248,28 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
 .sync-badge{position:fixed;bottom:80px;right:12px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;z-index:99;background:rgba(74,222,128,.2);color:var(--green);border:1px solid rgba(74,222,128,.4);transition:opacity .3s}
 .sync-badge.syncing{background:rgba(251,191,36,.2);color:var(--yellow);border-color:rgba(251,191,36,.4)}
 .sync-badge.offline{background:rgba(248,113,113,.2);color:var(--red);border-color:rgba(248,113,113,.4)}
+/* МЕТКИ */
+.tag-badge{font-size:9px;font-weight:800;text-transform:uppercase;padding:2px 6px;border-radius:6px;letter-spacing:0.5px;margin-left:4px;}
+.tag-badge.vip{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.tag-badge.debtor{background:rgba(248,113,113,.15);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.tag-badge.new{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
 </style>
 </head>
 <body>
 
 <div class="loading-screen" id="loadingScreen">
   <div class="spinner"></div>
-  <div style="color:var(--text2);font-size:14px;">Загрузка...</div>
+  <div style="color:var(--text2);font-size:14px;">Загрузка... ⏳</div>
 </div>
 
 <div class="login-screen" id="loginScreen">
   <h1>💜 Учёт Китай</h1>
-  <p>Войди через Google, чтобы синхронизировать данные между всеми устройствами</p>
+  <p>Войди через Google, чтобы синхронизировать данные между всеми устройствами 📱💻</p>
   <button class="google-btn" onclick="doLogin()">
     <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-    Войти через Google
+    Войти через Google 🔐
   </button>
-  <div class="formula" style="max-width:300px;margin-top:20px;color:var(--text3);">Данные хранятся в защищённом облаке Firebase</div>
+  <div class="formula" style="max-width:300px;margin-top:20px;color:var(--text3);">Данные хранятся в защищённом облаке Firebase ☁️</div>
 </div>
 
 <div class="sync-badge syncing" id="syncBadge" style="display:none;">⏳ Загрузка...</div>
@@ -530,7 +541,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-  // ВАШИ КЛЮЧИ ДЛЯ ПРОЕКТА "УЧЁТ КИТАЙ"
   const firebaseConfig = {
     apiKey: "AIzaSyChxc101ECIQcvYTXaChzd7nR7aNUTVqNs",
     authDomain: "kitai-87aa5.firebaseapp.com",
@@ -573,7 +583,7 @@ const DEFAULT_CATS=['Одежда','Обувь','Техника','Космети
 const CAT_ICONS={'Одежда':'👕','Обувь':'👟','Техника':'📱','Косметика':'💄','Детское':'🧸','Аксессуары':'👜','Дом':'🏠','Другое':'📦'};
 const MONTH_NAMES=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MONTH_SHORT=['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
-const TAGS={vip:{label:'⭐ VIP',cls:'tag-vip'},debtor:{label:'⚠️ Должник',cls:'tag-debtor'},new:{label:'🆕 Новый',cls:'tag-new'},sleep:{label:'💤 Спящий',cls:'tag-sleep'}};
+const TAGS={vip:{label:'⭐ VIP',cls:'tag-vip'},debtor:{label:'⚠️ Должник',cls:'tag-debtor'},new:{label:'🆕 Новый',cls:'tag-new'}};
 const CURRENCIES={BYN:{symbol:'BYN',rate:1},USD:{symbol:'$',rate:0.31},RUB:{symbol:'₽',rate:28.5},EUR:{symbol:'€',rate:0.29}};
 const DEFAULT_TEMPLATES=[
   {id:1,name:'📦 Заказ пришёл',text:'Привет! Твой заказ пришёл, можно забрать 📦'},
@@ -587,10 +597,8 @@ function load(){ return userData.people || []; }
 
 function save(data){
   userData.people = data;
-  // 1. Мгновенно сохраняем локально
   localStorage.setItem(KEY, JSON.stringify(data));
   
-  // 2. Отправляем в Firebase (в папку users/UID/data/main)
   if(!currentUser || !window.FB) return;
   updateSyncBadge('syncing');
   
@@ -685,7 +693,6 @@ async function loadFromFirestore(uid) {
   updateSyncBadge('syncing');
   try {
     const { db: fdb, doc, getDoc } = window.FB;
-    // СТРУКТУРА КАК В ПОСЫЛКАХ: users/UID/data/main
     const ref = doc(fdb, 'users', uid, 'data', 'main');
     const snap = await getDoc(ref);
 
@@ -693,17 +700,14 @@ async function loadFromFirestore(uid) {
       const data = snap.data() || {};
       userData.people = data.people || [];
       userData.archive = data.archive || {};
-      // Синхронизируем локальную память с облаком
       localStorage.setItem(KEY, JSON.stringify(userData.people));
       localStorage.setItem(ARCHIVE_KEY, JSON.stringify(userData.archive));
     } else {
-      // Если в облаке пусто, берем из памяти (на случай если инет отвалился)
       const localPeople = localStorage.getItem(KEY);
       const localArchive = localStorage.getItem(ARCHIVE_KEY);
       if (localPeople) userData.people = JSON.parse(localPeople);
       if (localArchive) userData.archive = JSON.parse(localArchive);
       
-      // И отправляем в облако
       if (userData.people.length > 0 || Object.keys(userData.archive).length > 0) {
         save(userData.people);
         saveArchive(userData.archive);
@@ -713,7 +717,6 @@ async function loadFromFirestore(uid) {
     renderAll();
   } catch (e) {
     console.error(e);
-    // Если ошибка сети, грузим из памяти
     const localPeople = localStorage.getItem(KEY);
     const localArchive = localStorage.getItem(ARCHIVE_KEY);
     if (localPeople) userData.people = JSON.parse(localPeople);
@@ -732,7 +735,6 @@ function updateSyncBadge(state){
   else{b.className='sync-badge offline';b.style.opacity='1';b.textContent='⚠️ Нет связи';}
 }
 
-// Запуск Firebase после загрузки модулей
 if (window.FB) { initFirebase(); }
 else { window.addEventListener('firebase-ready', initFirebase); }
 
@@ -842,6 +844,13 @@ function getAvatarHtml(p){
   return p.avatar||'🧑';
 }
 
+function renderTagBadges(p) {
+  return (p.tags || []).map(t => {
+    if (!TAGS[t]) return '';
+    return `<span class="tag-badge ${t}">${TAGS[t].label}</span>`;
+  }).join('');
+}
+
 // ============ ДАШБОРД ============
 function renderDash(){
   const data=load();
@@ -945,11 +954,10 @@ function renderPeople(){
   if(!filtered.length){el.innerHTML='<div class="empty">Никого не найдено</div>';return}
   el.innerHTML=filtered.map(p=>{
     const c=calcPerson(p);
-    const tags=(p.tags||[]).map(t=>TAGS[t]?'<span class="tag '+TAGS[t].cls+'">'+TAGS[t].label+'</span>':'').join('');
     return '<div class="person-card '+c.status+'">'+
       '<div class="person-main" onclick="openPerson('+p.id+')">'+
         '<div class="avatar">'+getAvatarHtml(p)+'<span class="status-dot '+c.status+'"></span></div>'+
-        '<div class="info"><div class="name">'+escapeHtml(p.name)+tags+'</div>'+
+        '<div class="info"><div class="name">'+escapeHtml(p.name)+renderTagBadges(p)+'</div>'+
         '<div class="sub">'+c.ordersCount+' '+plural(c.ordersCount,'заказ','заказа','заказов')+' · '+c.weight.toFixed(2)+' кг · ¥'+c.yuan.toFixed(2)+'</div></div>'+
         '<div class="amount"><div class="byn">'+fmtMoney(c.total).split(' ')[0]+'</div><div class="y">'+fmtMoney(c.total).split(' ')[1]+'</div></div>'+
       '</div>'+
@@ -973,8 +981,10 @@ function openPerson(id){
   const def=getDefaults();
   const cleanDelivRate = def.cleanDelivRate || 0;
   const cleanBuyRate = def.cleanBuyRate || 0;
-  const cleanDelivSum = c.weight * cleanDelivRate;
-  const cleanBuySum = c.yuan * cleanBuyRate;
+  
+  // ИСПРАВЛЕННЫЕ ФОРМУЛЫ ЧИСТОГО ДОХОДА
+  const cleanDelivSum = (c.weight * def.kg) - (c.weight * cleanDelivRate);
+  const cleanBuySum = (c.yuan * def.rate) - (c.yuan * cleanBuyRate);
 
   const ordersHtml=(p.orders||[]).length?(p.orders||[]).map(o=>{
     const co=calcOrder(o);const catIco=getCatIcon(o.category);
@@ -1531,6 +1541,13 @@ function exportCSV(){
 function plural(n,one,few,many){const m10=n%10,m100=n%100;if(m10===1&&m100!==11)return one;if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;return many;}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function escapeAttr(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+
+// ============ PWA REGISTRATION ============
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+  });
+}
 
 // ============ СТАРТ ============
 loadTheme();
