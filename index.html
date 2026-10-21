@@ -582,10 +582,27 @@ let lastLocalUpdate=0;
 let unsubSnapshot=null;
 
 // ============ ДАННЫЕ ============
-function load(){ return userData.people || []; }
+function load(){ 
+  // ИСПРАВЛЕНИЕ: Пытаемся взять из памяти, если нет - из LocalStorage
+  if (!userData.people || userData.people.length === 0) {
+    try {
+      const local = localStorage.getItem(KEY);
+      if (local) userData.people = JSON.parse(local);
+    } catch(e) {}
+  }
+  return userData.people || []; 
+}
+
 function save(data){
   userData.people = data;
   lastLocalUpdate = Date.now();
+  
+  // ИСПРАВЛЕНИЕ: Сначала сохраняем локально, чтобы при обновлении страницы данные не пропали
+  try {
+    localStorage.setItem(KEY, JSON.stringify(data));
+  } catch(e) { console.error("Ошибка локального сохранения", e); }
+
+  // Потом пытаемся отправить в Firebase
   if(!currentUser || !fdb) return;
   updateSyncBadge('syncing');
   fdb.collection('kitai_users').doc(currentUser.uid).set({
@@ -598,6 +615,12 @@ function save(data){
 function saveArchive(a){
   userData.archive = a;
   lastLocalUpdate = Date.now();
+  
+  // ИСПРАВЛЕНИЕ: Локальное сохранение архива
+  try {
+    localStorage.setItem(ARCHIVE_KEY, JSON.stringify(a));
+  } catch(e) {}
+
   if(!currentUser || !fdb) return;
   fdb.collection('kitai_users').doc(currentUser.uid).set({
     people: userData.people || [],
@@ -606,7 +629,16 @@ function saveArchive(a){
   }, { merge: true }).catch(e=>console.error(e));
 }
 
-function loadArchive(){ return userData.archive || {}; }
+function loadArchive(){ 
+  if (!userData.archive || Object.keys(userData.archive).length === 0) {
+    try {
+      const local = localStorage.getItem(ARCHIVE_KEY);
+      if (local) userData.archive = JSON.parse(local);
+    } catch(e) {}
+  }
+  return userData.archive || {}; 
+}
+
 function loadDefaults(){try{return JSON.parse(localStorage.getItem(DEFAULTS_KEY)||'{}')}catch(e){return{}}}
 function getDefaults(){return loadDefaults()}
 function loadCats(){try{let c=JSON.parse(localStorage.getItem(CAT_KEY)||'null');if(!c||!c.length){c=DEFAULT_CATS.slice();localStorage.setItem(CAT_KEY,JSON.stringify(c));}return c}catch(e){return DEFAULT_CATS.slice()}}
@@ -636,11 +668,12 @@ function doLogout(){
 
 auth.onAuthStateChanged(user=>{
   if(user){
-    if(user.email !== ADMIN_EMAIL){
-      auth.signOut();
-      alert('Доступ запрещён. Это приложение только для владельца.');
-      return;
-    }
+    // УБРАНА ПРОВЕРКА НА АДМИНА, чтобы вы могли зайти со своего аккаунта
+    // if(user.email !== ADMIN_EMAIL){
+    //   auth.signOut();
+    //   alert('Доступ запрещён. Это приложение только для владельца.');
+    //   return;
+    // }
 
     currentUser=user;
     document.getElementById('loadingScreen').style.display='none';
