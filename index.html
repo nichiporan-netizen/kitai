@@ -594,6 +594,7 @@ function save(data){
   setDoc(ref, { 
     people: data, 
     archive: userData.archive || {},
+    defaults: loadDefaults(), // СИНХРОНИЗИРУЕМ И КУРСЫ ТОЖЕ
     updatedAt: Date.now() 
   }, { merge: true })
   .then(()=>updateSyncBadge('online'))
@@ -610,6 +611,7 @@ function saveArchive(a){
   setDoc(ref, { 
     people: userData.people || [],
     archive: a,
+    defaults: loadDefaults(),
     updatedAt: Date.now() 
   }, { merge: true }).catch(e=>console.error(e));
 }
@@ -675,6 +677,7 @@ function initFirebase() {
   });
 }
 
+// ПРИНУДИТЕЛЬНАЯ СИНХРОНИЗАЦИЯ ПРИ ЗАГРУЗКЕ
 async function loadFromFirestore(uid) {
   updateSyncBadge('syncing');
   try {
@@ -686,9 +689,16 @@ async function loadFromFirestore(uid) {
       const data = snap.data() || {};
       userData.people = data.people || [];
       userData.archive = data.archive || {};
+      
+      // Если в облаке есть курсы - берем их и сохраняем локально, чтобы везде было одинаково
+      if (data.defaults) {
+        localStorage.setItem(DEFAULTS_KEY, JSON.stringify(data.defaults));
+      }
+      
       localStorage.setItem(KEY, JSON.stringify(userData.people));
       localStorage.setItem(ARCHIVE_KEY, JSON.stringify(userData.archive));
     } else {
+      // Если в облаке пусто, берем из памяти
       const localPeople = localStorage.getItem(KEY);
       const localArchive = localStorage.getItem(ARCHIVE_KEY);
       if (localPeople) userData.people = JSON.parse(localPeople);
@@ -850,10 +860,12 @@ function renderDash(){
 
   data.forEach(p=>{
     const c = calcPerson(p);
-    // ЧЕТКАЯ ФОРМУЛА ДЛЯ ГЛАВНОЙ
+    // ФОРМУЛЫ ДЛЯ ГЛАВНОЙ
     totalCleanDeliv += (c.deliv - (c.weight * cleanDelivRate));
     totalCleanBuy += (c.goods - (c.yuan * cleanBuyRate));
   });
+  
+  const totalCleanAll = totalCleanDeliv + totalCleanBuy;
 
   let overdueCount=0;data.forEach(p=>{if(calcPerson(p).overdue)overdueCount++;});
   
@@ -865,7 +877,8 @@ function renderDash(){
     '<div class="dash-card"><div class="dc-lbl">🛒 Сумма товаров (для клиента)</div><div class="dc-val">'+fmtMoney(t.goodsByn)+'</div></div>'+
     '<div class="dash-card"><div class="dc-lbl">🚚 Сумма доставки (для клиента)</div><div class="dc-val">'+fmtMoney(t.delivByn)+'</div></div>'+
     '<div class="dash-card teal"><div class="dc-lbl">💎 Ч.доход (доставка)</div><div class="dc-val">'+fmtMoney(totalCleanDeliv)+'</div></div>'+
-    '<div class="dash-card purple"><div class="dc-lbl">💎 Ч.доход (выкуп)</div><div class="dc-val">'+fmtMoney(totalCleanBuy)+'</div></div>';
+    '<div class="dash-card purple"><div class="dc-lbl">💎 Ч.доход (выкуп)</div><div class="dc-val">'+fmtMoney(totalCleanBuy)+'</div></div>'+
+    '<div class="dash-card" style="grid-column: span 2; background: linear-gradient(135deg, rgba(168,85,247,.15), rgba(168,85,247,.05)); border-color: rgba(168,85,247,.3);"><div class="dc-lbl" style="color:var(--accent2);">🏆 ОБЩИЙ ЧИСТЫЙ ДОХОД</div><div class="dc-val" style="color:var(--accent2); font-size: 24px;">'+fmtMoney(totalCleanAll)+'</div></div>';
 
   const debtors=data.filter(p=>{const c=calcPerson(p);return c.remain>0.01;}).map(p=>({p,c:calcPerson(p)})).sort((a,b)=>b.c.remain-a.c.remain).slice(0,5);
   const overdue=data.filter(p=>calcPerson(p).overdue).slice(0,5);
@@ -953,6 +966,8 @@ function saveDefaults(){
   const cleanDelivRate=parseFloat(document.getElementById('me-clean-deliv-rate').value)||0;
   const cleanBuyRate=parseFloat(document.getElementById('me-clean-buy-rate').value)||0;
   localStorage.setItem(DEFAULTS_KEY,JSON.stringify({rate,kg,cleanDelivRate,cleanBuyRate}));
+  // Отправляем настройки в облако
+  save(load());
   renderDash();
   showModal('✅','Курсы сохранены');
 }
