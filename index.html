@@ -309,18 +309,19 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
       <div class="sub" id="meGrandSub">¥ 0.00 · 0.00 кг · 0 человек</div>
     </div>
     <div class="form">
-      <h2>🛠️ Курсы по умолчанию</h2>
-      <span class="field-label">Курс юаня (¥ → BYN)</span>
-      <input id="me-default-rate" type="number" step="0.0001" inputmode="decimal" placeholder="0.47">
-      <span class="field-label">Курс за 1 кг доставки (BYN)</span>
-      <input id="me-default-kg" type="number" step="0.01" inputmode="decimal" placeholder="24">
+      <h2>🛠️ Мои закупочные курсы</h2>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Эти курсы используются для расчета вашего чистого дохода (сколько вы платите на самом деле).</p>
+      <span class="field-label">Мой закупочный курс за 1 кг (BYN)</span>
+      <input id="me-clean-deliv-rate" type="number" step="0.01" inputmode="decimal" placeholder="например 17">
+      <span class="field-label">Мой закупочный курс юаня</span>
+      <input id="me-clean-buy-rate" type="number" step="0.0001" inputmode="decimal" placeholder="например 0.47">
       
       <div style="border-top:1px solid var(--border); margin-top:14px; padding-top:14px;">
-        <h2 style="color:var(--teal);">💎 Чистый доход</h2>
-        <span class="field-label">Курс чистый (доставка)</span>
-        <input id="me-clean-deliv-rate" type="number" step="0.01" inputmode="decimal" placeholder="например 15">
-        <span class="field-label">Курс чистый (выкуп)</span>
-        <input id="me-clean-buy-rate" type="number" step="0.01" inputmode="decimal" placeholder="например 0.5">
+        <h2 style="color:var(--accent2);">📝 Курсы по умолчанию для клиентов</h2>
+        <span class="field-label">Курс за 1 кг доставки (для клиента)</span>
+        <input id="me-default-kg" type="number" step="0.01" inputmode="decimal" placeholder="20">
+        <span class="field-label">Курс юаня (для клиента)</span>
+        <input id="me-default-rate" type="number" step="0.0001" inputmode="decimal" placeholder="0.56">
       </div>
 
       <button onclick="saveDefaults()">💾 Сохранить курсы</button>
@@ -434,15 +435,15 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
       </div>
       <div class="row2">
         <div><span class="field-label">Вес (кг)</span>
-        <input id="o-weight" type="number" step="0.01" inputmode="decimal" placeholder="6"></div>
-        <div><span class="field-label">Курс за 1 кг</span>
-        <input id="o-kgrate" type="number" step="0.01" inputmode="decimal" placeholder="24"></div>
+        <input id="o-weight" type="number" step="0.01" inputmode="decimal" placeholder="5"></div>
+        <div><span class="field-label">Курс за 1 кг (для клиента)</span>
+        <input id="o-kgrate" type="number" step="0.01" inputmode="decimal" placeholder="20"></div>
       </div>
       <div class="row2">
         <div><span class="field-label">Юани ¥</span>
-        <input id="o-yuan" type="number" step="0.01" inputmode="decimal" placeholder="270"></div>
-        <div><span class="field-label">Курс юаня</span>
-        <input id="o-rate" type="number" step="0.0001" inputmode="decimal" placeholder="0.47"></div>
+        <input id="o-yuan" type="number" step="0.01" inputmode="decimal" placeholder="100"></div>
+        <div><span class="field-label">Курс юаня (для клиента)</span>
+        <input id="o-rate" type="number" step="0.0001" inputmode="decimal" placeholder="0.56"></div>
       </div>
       <span class="field-label">💰 Расход (BYN)</span>
       <input id="o-cost" type="number" step="0.01" inputmode="decimal" placeholder="например 100">
@@ -979,12 +980,10 @@ function openPerson(id){
   if(c.overdue&&c.status!=='paid'){statusText='🔥 Просрочено >30 дн.';statusClass='debt'}
   
   const def=getDefaults();
-  const cleanDelivRate = def.cleanDelivRate || 0;
-  const cleanBuyRate = def.cleanBuyRate || 0;
   
-  // ПРАВИЛЬНЫЕ ФОРМУЛЫ
-  const cleanDelivSum = c.deliv - (c.weight * (def.kg || 0));
-  const cleanBuySum = c.goods - (c.yuan * (def.rate || 0));
+  // ПРАВИЛЬНЫЕ ФОРМУЛЫ: (Сумма для клиента) - (Вес/Юани * Мой закупочный курс)
+  const cleanDelivSum = c.deliv - (c.weight * (def.cleanDelivRate || 0));
+  const cleanBuySum = c.goods - (c.yuan * (def.cleanBuyRate || 0));
 
   const ordersHtml=(p.orders||[]).length?(p.orders||[]).map(o=>{
     const co=calcOrder(o);const catIco=getCatIcon(o.category);
@@ -1035,8 +1034,8 @@ function openPerson(id){
     '<div class="stats-grid">'+
       '<div class="stat weight"><span class="val">'+c.weight.toFixed(2)+' кг</span><span class="lbl">Вес</span></div>'+
       '<div class="stat yuan"><span class="val">¥'+c.yuan.toFixed(2)+'</span><span class="lbl">Юани</span></div>'+
-      '<div class="stat goods"><span class="val">'+fmtMoney(c.goods).split(' ')[0]+'</span><span class="lbl">Товар</span></div>'+
-      '<div class="stat deliv"><span class="val">'+fmtMoney(c.deliv).split(' ')[0]+'</span><span class="lbl">Доставка</span></div>'+
+      '<div class="stat goods"><span class="val">'+fmtMoney(c.goods).split(' ')[0]+'</span><span class="lbl">Товар (клиенту)</span></div>'+
+      '<div class="stat deliv"><span class="val">'+fmtMoney(c.deliv).split(' ')[0]+'</span><span class="lbl">Доставка (клиенту)</span></div>'+
       '<div class="stat teal"><span class="val">'+fmtMoney(cleanDelivSum).split(' ')[0]+'</span><span class="lbl">Ч.доход (дост.)</span></div>'+
       '<div class="stat teal"><span class="val">'+fmtMoney(cleanBuySum).split(' ')[0]+'</span><span class="lbl">Ч.доход (выкуп)</span></div>'+
     '</div>'+
