@@ -543,6 +543,8 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const fdb = firebase.firestore();
 
+const ADMIN_EMAIL = 'nichiporan@gmail.com';
+
 const KEY='kitai_people_v1';
 const ARCHIVE_KEY='kitai_archive_v1';
 const DEFAULTS_KEY='kitai_defaults_v1';
@@ -634,6 +636,12 @@ function doLogout(){
 
 auth.onAuthStateChanged(user=>{
   if(user){
+    if(user.email !== ADMIN_EMAIL){
+      auth.signOut();
+      alert('Доступ запрещён. Это приложение только для владельца.');
+      return;
+    }
+
     currentUser=user;
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('loginScreen').classList.remove('active');
