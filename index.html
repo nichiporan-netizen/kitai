@@ -6,7 +6,6 @@
 <title>Учёт Китай</title>
 <meta name="theme-color" content="#a855f7">
 
-<!-- PWA Настройки -->
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -281,7 +280,25 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div class="top-bar"><h1>🏠 Главная</h1><button class="icon-btn" onclick="toggleTheme()">🌙</button></div>
     <div class="dash-cards" id="dashCards"></div>
     <div class="dash-tasks" id="dashTasks"></div>
-    <div class="form"><h2>📈 Последние 6 месяцев</h2><div id="dashChart"></div></div>
+  </div>
+
+  <!-- СТАТИСТИКА -->
+  <div class="screen" id="screen-stats">
+    <div class="top-bar"><h1>📈 Статистика</h1><button class="icon-btn" onclick="toggleTheme()">🌙</button></div>
+    
+    <div class="profit-bar" style="flex-wrap:wrap; margin-bottom: 16px;">
+      <div class="pb income" style="min-width:45%;"><span class="v" id="statsIncome">0</span><span class="l">Всего товаров (BYN)</span></div>
+      <div class="pb income" style="min-width:45%;"><span class="v" id="statsDeliv">0</span><span class="l">Всего доставки (BYN)</span></div>
+      <div class="pb profit" style="min-width:45%;"><span class="v" id="statsProfit">0</span><span class="l">Общая прибыль</span></div>
+      <div class="pb expense" style="min-width:45%;"><span class="v" id="statsDebt">0</span><span class="l">Долги клиентов</span></div>
+    </div>
+
+    <div class="form"><h2>📅 По месяцам</h2><div id="statsChart"></div></div>
+    
+    <div class="form">
+      <h2>📋 Все заказы за всё время</h2>
+      <div id="statsAllOrders"></div>
+    </div>
   </div>
 
   <!-- ПРОФИЛЬ -->
@@ -302,11 +319,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
       <div class="ico">💾</div>
       <div class="txt">Сделай резервную копию!<small>Прошло больше недели</small></div>
       <button onclick="exportBackup()">Скачать</button>
-    </div>
-    <div class="total">
-      <div class="lbl">Текущий месяц</div>
-      <div class="val" id="meGrandTotal">0.00 BYN</div>
-      <div class="sub" id="meGrandSub">¥ 0.00 · 0.00 кг · 0 человек</div>
     </div>
     <div class="form">
       <h2>🛠️ Мои закупочные курсы</h2>
@@ -332,7 +344,8 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     </div>
     <div class="form">
       <h2>🎨 Тема</h2>
-      <div class="theme-picker" id="themePicker"></div>
+      <input type="color" id="themeColorPicker" style="height: 50px; padding: 5px; cursor: pointer;" onchange="setColorTheme(this.value)">
+      <p style="font-size:11px; color:var(--text3); margin-top:8px;">Выбери любой цвет для кнопок и иконок</p>
     </div>
     <div class="form">
       <h2>🏷️ Мои категории</h2>
@@ -470,17 +483,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <div id="paymentsList"></div>
   </div>
 
-  <div class="screen" id="screen-profit">
-    <div class="top-bar"><h1>💵 Прибыль</h1><button class="icon-btn" onclick="toggleTheme()">🌙</button></div>
-    <div class="profit-bar">
-      <div class="pb income"><span class="v" id="totalIncome">0</span><span class="l">Доход</span></div>
-      <div class="pb expense"><span class="v" id="totalExpense">0</span><span class="l">Расход</span></div>
-      <div class="pb profit"><span class="v" id="totalProfit">0</span><span class="l">Прибыль</span></div>
-    </div>
-    <div class="form"><h2>📅 По месяцам</h2><div id="profitMonthly"></div></div>
-    <div class="form"><h2>🗂️ По категориям</h2><div id="categoryStats"></div></div>
-  </div>
-
   <div class="screen" id="screen-photos">
     <div class="top-bar"><h1>📸 Фото товаров</h1><button class="icon-btn" onclick="toggleTheme()">🌙</button></div>
     <div id="photoGallery"></div>
@@ -500,31 +502,14 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
     <button class="back-btn" onclick="switchScreen('archive')">← Назад</button>
     <div id="archiveDetails"></div>
   </div>
-
-  <div class="screen" id="screen-stats">
-    <div class="top-bar"><h1>📈 Статистика</h1><button class="icon-btn" onclick="toggleTheme()">🌙</button></div>
-    <div class="total">
-      <div class="lbl">Всего за всё время</div>
-      <div class="val" id="statsTotal">0.00 BYN</div>
-      <div class="sub" id="statsSub">¥ 0.00 · 0.00 кг</div>
-    </div>
-    <div class="search-box">
-      <span class="ico">🔍</span>
-      <input id="searchOrders" placeholder="Поиск по заказам..." oninput="onOrdersSearchInput()">
-      <div class="search-clear" id="ordersClear" onclick="clearOrdersSearch()">✕</div>
-    </div>
-    <div class="filter-row" id="statsFilterRow"></div>
-    <div class="form"><h2>📅 По месяцам</h2><div id="monthlyStats"></div></div>
-    <div class="form"><h2>📋 Все заказы</h2><div id="allOrders"></div></div>
-  </div>
 </div>
 
 <div class="menu" id="appMenu" style="display:none;">
   <div class="menu-item active" data-screen="dash" onclick="switchScreen('dash')"><span class="ico">🏠</span>Главная</div>
   <div class="menu-item" data-screen="people" onclick="switchScreen('people')"><span class="ico">👥</span>Люди</div>
   <div class="menu-item" data-screen="payments" onclick="switchScreen('payments')"><span class="ico">💰</span>Оплаты</div>
+  <div class="menu-item" data-screen="stats" onclick="switchScreen('stats')"><span class="ico">📊</span>Статистика</div>
   <div class="menu-item" data-screen="photos" onclick="switchScreen('photos')"><span class="ico">📸</span>Фото</div>
-  <div class="menu-item" data-screen="archive" onclick="switchScreen('archive')"><span class="ico">📚</span>История</div>
   <div class="menu-item" data-screen="me" onclick="switchScreen('me')"><span class="ico">⚙️</span>Ещё</div>
 </div>
 
@@ -536,7 +521,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
   </div>
 </div>
 
-<!-- Firebase Modules -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
@@ -558,7 +542,6 @@ button.small{width:auto;padding:8px 14px;font-size:13px;margin:0}
   window.FB = { app, auth, db, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, doc, setDoc, getDoc };
   window.dispatchEvent(new Event('firebase-ready'));
 </script>
-
 <script>
 // ============ СОСТОЯНИЕ ============
 let currentUser=null;
@@ -577,7 +560,8 @@ const CURRENCY_KEY='kitai_currency_v1';
 const LAST_BACKUP_KEY='kitai_last_backup_v1';
 const TEMPLATES_KEY='kitai_templates_v1';
 
-const AVATARS=['🧑‍🦰','👩','🧔','👩‍🦱','🧑','👨','👩‍🦳','🧑‍🦱','👨‍🦰','👩‍🦰','🧓','👧','🧒'];
+const AVATARS=['🧑‍🦰','👩','🧔','👩‍🦱','🧑','👨','👩‍🦳','🧑‍🦱','👨‍🦰','👩‍🦰','🧓','👧','🧒','🧑‍🎤','🧑‍🚀','👩‍🎨','👨‍💻','🦊','🐼','🐻','🐰','🐨','🦁','🐯','🐮','🐷','🐸','🐵','🐔','🦄','🐧','🦋','🐝','🐢','🐙','🍎','🍇','🍓','🍌','🍉','🍒','🍑','🍊','🍋','🥝'];
+
 const STATUS_LABELS={ordered:'Заказано',shipped:'В пути',arrived:'На складе',issued:'Выдано'};
 const STATUS_ICONS={ordered:'🟡',shipped:'🚚',arrived:'🛬',issued:'✅'};
 const DEFAULT_CATS=['Одежда','Обувь','Техника','Косметика','Детское','Аксессуары','Дом','Другое'];
@@ -789,21 +773,21 @@ function goBack(){switchScreen('people')}
 // ============ ТЕМА ============
 function loadTheme(){
   if((localStorage.getItem(THEME_KEY)||'dark')==='light')document.body.classList.add('light');
-  applyColor(localStorage.getItem(COLOR_KEY)||'purple');
+  const savedColor = localStorage.getItem(COLOR_KEY);
+  if(savedColor) { applyColor(savedColor); } else { applyColor('#a855f7'); }
 }
 function applyColor(c){
   const root=document.documentElement;
-  const colors={purple:{a:'#a855f7',a2:'#c084fc'},blue:{a:'#3b82f6',a2:'#60a5fa'},green:{a:'#10b981',a2:'#34d399'},orange:{a:'#f59e0b',a2:'#fb923c'}};
-  const col=colors[c]||colors.purple;
-  root.style.setProperty('--accent',col.a);root.style.setProperty('--accent2',col.a2);
+  root.style.setProperty('--accent',c);
+  // Делаем чуть светлее для градиента
+  root.style.setProperty('--accent2',c);
+  const picker = document.getElementById('themeColorPicker');
+  if(picker) picker.value = c;
 }
 function toggleTheme(){document.body.classList.toggle('light');localStorage.setItem(THEME_KEY,document.body.classList.contains('light')?'light':'dark');}
-function setColorTheme(c){localStorage.setItem(COLOR_KEY,c);applyColor(c);renderThemePicker();}
-function renderThemePicker(){
-  const cur=localStorage.getItem(COLOR_KEY)||'purple';
-  const themes=[{id:'purple',label:'💜'},{id:'blue',label:'💙'},{id:'green',label:'💚'},{id:'orange',label:'🧡'}];
-  const el=document.getElementById('themePicker');if(!el)return;
-  el.innerHTML=themes.map(t=>'<div class="theme-opt theme-'+t.id+(t.id===cur?' selected':'')+'" onclick="setColorTheme(\''+t.id+'\')">'+t.label+'</div>').join('');
+function setColorTheme(c){
+  localStorage.setItem(COLOR_KEY,c);
+  applyColor(c);
 }
 function renderCurrency(){
   const cur=loadCurrency();
@@ -874,11 +858,13 @@ function renderDash(){
   
   document.getElementById('dashCards').innerHTML=
     '<div class="dash-card red"><div class="dc-lbl">💰 Должны всего</div><div class="dc-val">'+fmtMoney(t.totalRemain)+'</div></div>'+
-    '<div class="dash-card green"><div class="dc-lbl">📈 Заработано</div><div class="dc-val">'+fmtMoney(t.totalProfit)+'</div></div>'+
-    '<div class="dash-card blue"><div class="dc-lbl">👥 Люди</div><div class="dc-val">'+data.length+'</div></div>'+
     '<div class="dash-card yellow"><div class="dc-lbl">🔥 Просрочки</div><div class="dc-val">'+overdueCount+'</div></div>'+
-    '<div class="dash-card teal"><div class="dc-lbl">💎 Чистый доход (доставка)</div><div class="dc-val">'+fmtMoney(totalCleanDeliv)+'</div></div>'+
-    '<div class="dash-card purple"><div class="dc-lbl">💎 Чистый доход (выкуп)</div><div class="dc-val">'+fmtMoney(totalCleanBuy)+'</div></div>';
+    '<div class="dash-card blue"><div class="dc-lbl">👥 Люди</div><div class="dc-val">'+data.length+'</div></div>'+
+    '<div class="dash-card green"><div class="dc-lbl">⚖️ Общий вес</div><div class="dc-val">'+t.totalWeight.toFixed(2)+' кг</div></div>'+
+    '<div class="dash-card"><div class="dc-lbl">🛒 Сумма товаров (для клиента)</div><div class="dc-val">'+fmtMoney(t.goodsByn)+'</div></div>'+
+    '<div class="dash-card"><div class="dc-lbl">🚚 Сумма доставки (для клиента)</div><div class="dc-val">'+fmtMoney(t.delivByn)+'</div></div>'+
+    '<div class="dash-card teal"><div class="dc-lbl">💎 Ч.доход (доставка)</div><div class="dc-val">'+fmtMoney(totalCleanDeliv)+'</div></div>'+
+    '<div class="dash-card purple"><div class="dc-lbl">💎 Ч.доход (выкуп)</div><div class="dc-val">'+fmtMoney(totalCleanBuy)+'</div></div>';
 
   const debtors=data.filter(p=>{const c=calcPerson(p);return c.remain>0.01;}).map(p=>({p,c:calcPerson(p)})).sort((a,b)=>b.c.remain-a.c.remain).slice(0,5);
   const overdue=data.filter(p=>calcPerson(p).overdue).slice(0,5);
@@ -890,13 +876,59 @@ function renderDash(){
   if(newbies.length){tasksHtml+='<h3 style="margin-top:12px;">🆕 Новые клиенты</h3>';tasksHtml+=newbies.map(p=>'<div class="dash-task" onclick="openPerson('+p.id+')"><div class="dt-info"><div class="dt-name">'+getAvatarHtml(p)+' '+escapeHtml(p.name)+'</div></div><div class="dt-amount" style="color:var(--green);">🆕</div></div>').join('');}
   if(!tasksHtml)tasksHtml='<div style="text-align:center;color:var(--text3);padding:12px;font-size:13px;">Всё отлично! 🎉</div>';
   document.getElementById('dashTasks').innerHTML=tasksHtml;
+}
+
+// ============ СТАТИСТИКА ============
+function renderStats(){
+  const data=load();const arch=loadArchive();
+  let allPeople=[];data.forEach(p=>allPeople.push(p));
+  Object.keys(arch).forEach(k=>{(arch[k].people||[]).forEach(p=>allPeople.push(p))});
   
+  let t=calcTotals(allPeople);
+  document.getElementById('statsIncome').textContent=fmtMoney(t.goodsByn).split(' ')[0];
+  document.getElementById('statsDeliv').textContent=fmtMoney(t.delivByn).split(' ')[0];
+  document.getElementById('statsProfit').textContent=fmtMoney(t.totalProfit).split(' ')[0];
+  document.getElementById('statsDebt').textContent=fmtMoney(t.totalRemain).split(' ')[0];
+
+  // График по месяцам (начиная с первого заказа)
   const months={};
-  data.forEach(p=>(p.orders||[]).forEach(o=>{if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);if(!months[m])months[m]=0;months[m]+=c.total;}));
-  const now=new Date();const last6=[];
-  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');last6.push({k,label:MONTH_SHORT[d.getMonth()],val:months[k]||0});}
-  const maxV=Math.max(1,...last6.map(x=>x.val));
-  document.getElementById('dashChart').innerHTML=last6.map(x=>{const pct=(x.val/maxV*100);return '<div><div class="month-label">'+x.label+'</div><div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,8)+'%">'+fmtMoney(x.val)+'</div></div></div>';}).join('');
+  allPeople.forEach(p=>(p.orders||[]).forEach(o=>{if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);if(!months[m])months[m]={total:0,count:0};months[m].total+=c.total;months[m].count++;}));
+  
+  const mKeys=Object.keys(months).sort();
+  let last6=[];
+  if(mKeys.length === 0) {
+    document.getElementById('statsChart').innerHTML='<div class="empty">Пока нет заказов</div>';
+  } else {
+    // Берем первый месяц из базы и идем до текущего
+    const firstDate = new Date(mKeys[0]+'-01');
+    const now = new Date();
+    let cur = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
+    while(cur <= now) {
+      const k = cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0');
+      last6.push({k, label:MONTH_SHORT[cur.getMonth()]+' '+cur.getFullYear().toString().slice(-2), val: months[k] ? months[k].total : 0, count: months[k] ? months[k].count : 0});
+      cur.setMonth(cur.getMonth()+1);
+    }
+    
+    const maxV=Math.max(1,...last6.map(x=>x.val));
+    document.getElementById('statsChart').innerHTML=last6.map(x=>{
+      const pct=(x.val/maxV*100);
+      return '<div style="margin-bottom:12px;">'+
+        '<div class="month-label">'+x.label+' ('+x.count+' зак.)</div>'+
+        '<div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,10)+'%">'+fmtMoney(x.val)+'</div></div></div>';
+    }).join('');
+  }
+
+  // Все заказы
+  let all=[];allPeople.forEach(p=>(p.orders||[]).forEach(o=>all.push({person:p,order:o})));
+  all.sort((a,b)=>(b.order.date||'').localeCompare(a.order.date||''));
+  
+  document.getElementById('statsAllOrders').innerHTML=all.length?all.slice(0, 50).map(x=>{
+    const c=calcOrder(x.order);
+    return '<div class="order-item">'+
+      '<div class="head"><div class="date">'+(x.order.date?new Date(x.order.date).toLocaleDateString('ru-RU'):'—')+' · '+escapeHtml(x.person.name)+'</div>'+
+      '<div class="order-total">'+fmtMoney(c.total)+'</div></div>'+
+      (x.order.items?'<div class="row-small">📦 '+escapeHtml(x.order.items)+'</div>':'')+'</div>';
+  }).join(''):'<div class="empty">Заказов нет</div>';
 }
 
 // ============ ПРОФИЛЬ ============
@@ -906,10 +938,9 @@ function renderMe(){
   document.getElementById('me-default-kg').value=def.kg||'';
   document.getElementById('me-clean-deliv-rate').value=def.cleanDelivRate||'';
   document.getElementById('me-clean-buy-rate').value=def.cleanBuyRate||'';
-  renderThemePicker();renderCats();renderCurrency();
+  renderCats();renderCurrency();
   const data=load();const t=calcTotals(data);
-  document.getElementById('meGrandTotal').textContent=fmtMoney(t.totalByn);
-  document.getElementById('meGrandSub').textContent='¥'+t.totalYuan.toFixed(2)+' · '+t.totalWeight.toFixed(2)+' кг · '+data.length+' '+plural(data.length,'человек','человека','человек');
+  
   const last=parseInt(localStorage.getItem(LAST_BACKUP_KEY)||'0');
   const days=last?(Date.now()-last)/(1000*60*60*24):999;
   document.getElementById('backupBanner').style.display=days>7?'flex':'none';
@@ -1439,49 +1470,7 @@ function openArchivePerson(key,personId){
   const mi=document.querySelector('.menu-item[data-screen="archive"]');if(mi)mi.classList.add('active');
 }
 
-function renderAll(){renderDash();renderMe();renderPeople();renderPayments();renderProfit();renderPhotos();renderArchive();renderStats();}
-
-function renderStatsFilter(){
-  const el=document.getElementById('statsFilterRow');if(!el)return;
-  const chips=[{id:'all',label:'Всё время'},{id:'month',label:'Этот месяц'},{id:'prev',label:'Прошлый месяц'},{id:'debt',label:'Должники'},{id:'paid',label:'Оплачено'}];
-  el.innerHTML=chips.map(c=>'<div class="filter-chip '+(activeStatsFilter===c.id?'active':'')+'" onclick="setStatsFilter(\''+c.id+'\')">'+c.label+'</div>').join('');
-}
-function setStatsFilter(k){activeStatsFilter=k;renderStats();}
-
-function renderStats(){
-  const data=load();const arch=loadArchive();
-  let allPeople=[];data.forEach(p=>allPeople.push(p));
-  Object.keys(arch).forEach(k=>{(arch[k].people||[]).forEach(p=>allPeople.push(p))});
-  let t=calcTotals(allPeople);
-  document.getElementById('statsTotal').textContent=fmtMoney(t.totalByn);
-  document.getElementById('statsSub').textContent='¥'+t.totalYuan.toFixed(2)+' · '+t.totalWeight.toFixed(2)+' кг';
-  renderStatsFilter();
-  const months={};
-  allPeople.forEach(p=>(p.orders||[]).forEach(o=>{if(!o.date)return;const m=o.date.slice(0,7);const c=calcOrder(o);if(!months[m])months[m]={total:0,count:0};months[m].total+=c.total;months[m].count++;}));
-  const mKeys=Object.keys(months).sort().reverse();
-  const maxT=Math.max(1,...mKeys.map(k=>months[k].total));
-  document.getElementById('monthlyStats').innerHTML=mKeys.length?mKeys.map(k=>{
-    const p=k.split('-');const pct=(months[k].total/maxT*100);
-    return '<div><div class="month-label">'+MONTH_SHORT[parseInt(p[1])-1]+' '+p[0]+' · '+months[k].count+' зак.</div>'+
-    '<div class="chart-bar"><div class="fill" style="width:'+Math.max(pct,15)+'%">'+fmtMoney(months[k].total)+'</div></div></div>';
-  }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Пока нет данных</div>';
-  const q=(document.getElementById('searchOrders').value||'').toLowerCase().trim();
-  let all=[];allPeople.forEach(p=>(p.orders||[]).forEach(o=>all.push({person:p,order:o})));
-  if(activeStatsFilter==='month'){const now=new Date();const key=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');all=all.filter(x=>(x.order.date||'').startsWith(key));}
-  else if(activeStatsFilter==='prev'){const d=new Date();d.setMonth(d.getMonth()-1);const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');all=all.filter(x=>(x.order.date||'').startsWith(key));}
-  else if(activeStatsFilter==='debt')all=all.filter(x=>calcPerson(x.person).status!=='paid');
-  else if(activeStatsFilter==='paid')all=all.filter(x=>calcPerson(x.person).status==='paid');
-  if(q)all=all.filter(x=>(x.person.name.toLowerCase().includes(q))||((x.order.items||'').toLowerCase().includes(q))||((x.order.track||'').toLowerCase().includes(q))||((x.order.category||'').toLowerCase().includes(q)));
-  all.sort((a,b)=>(b.order.date||'').localeCompare(a.order.date||''));
-  document.getElementById('allOrders').innerHTML=all.length?all.slice(0,80).map(x=>{
-    const c=calcOrder(x.order);
-    return '<div class="order-item">'+
-      '<div class="head"><div class="date">'+(x.order.date?new Date(x.order.date).toLocaleDateString('ru-RU'):'—')+' · '+escapeHtml(x.person.name)+'</div>'+
-      '<div class="order-total">'+fmtMoney(c.total)+'</div></div>'+
-      (x.order.items?'<div class="row-small">📦 '+escapeHtml(x.order.items)+'</div>':'')+
-      (x.order.track?'<div class="row-small">🔖 '+escapeHtml(x.order.track)+'</div>':'')+'</div>';
-  }).join(''):'<div class="empty" style="padding:20px;font-size:13px;">Ничего не найдено</div>';
-}
+function renderAll(){renderDash();renderMe();renderPeople();renderPayments();renderPhotos();renderArchive();renderStats();}
 
 function doCalc(){
   const yuan=parseFloat(document.getElementById('calc-yuan').value)||0;
