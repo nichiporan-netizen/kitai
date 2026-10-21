@@ -865,8 +865,8 @@ function renderDash(){
 
   data.forEach(p=>{
     const c = calcPerson(p);
-    totalCleanDeliv += c.weight * cleanDelivRate;
-    totalCleanBuy += c.yuan * cleanBuyRate;
+    totalCleanDeliv += (c.deliv - (c.weight * (def.kg || 0)));
+    totalCleanBuy += (c.goods - (c.yuan * (def.rate || 0)));
   });
 
   let overdueCount=0;data.forEach(p=>{if(calcPerson(p).overdue)overdueCount++;});
@@ -982,9 +982,9 @@ function openPerson(id){
   const cleanDelivRate = def.cleanDelivRate || 0;
   const cleanBuyRate = def.cleanBuyRate || 0;
   
-  // ИСПРАВЛЕННЫЕ ФОРМУЛЫ ЧИСТОГО ДОХОДА
-  const cleanDelivSum = (c.weight * def.kg) - (c.weight * cleanDelivRate);
-  const cleanBuySum = (c.yuan * def.rate) - (c.yuan * cleanBuyRate);
+  // ПРАВИЛЬНЫЕ ФОРМУЛЫ
+  const cleanDelivSum = c.deliv - (c.weight * (def.kg || 0));
+  const cleanBuySum = c.goods - (c.yuan * (def.rate || 0));
 
   const ordersHtml=(p.orders||[]).length?(p.orders||[]).map(o=>{
     const co=calcOrder(o);const catIco=getCatIcon(o.category);
